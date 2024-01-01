@@ -9,3 +9,12 @@ permissions:
   lu7stats.seebroadcasts:
     description: Permission to see stat message broadcasts
     default: true
+  lu7stats.manualbroadcasts:
+    description: Permission to manually trigger a broadcast
+    default: false
+
+commands:
+  broadcaststat:
+    description: Manually triggers the broadcast of a random stat message
+    usage: /broadcaststat
+    permission: lu7stats.manualbroadcasts
