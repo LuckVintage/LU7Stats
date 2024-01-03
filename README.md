@@ -66,7 +66,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:beetroots
 - mine_block:bamboo
 - mine_block:sand
-- mine:block:netherrack
+- mine_block:netherrack
 - mine_block:deepslate_iron_ore
 - mine_block:deepslate_redstone_ore
 - mine_block:deepslate_lapis_ore
