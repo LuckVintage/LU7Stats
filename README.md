@@ -99,3 +99,4 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:deepslate_emerald_ore
 - kill_entity:skeleton
 - kill_entity:ghast
+- mine_block:clay
