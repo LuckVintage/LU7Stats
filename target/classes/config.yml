@@ -1,0 +1,4 @@
+# Configuration for LU7 Stats Plugin
+
+# Other options
+enablebStats: true # This has no impact on server performance, we strongly encourage keeping bStats enabled
