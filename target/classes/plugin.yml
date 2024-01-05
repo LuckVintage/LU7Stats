@@ -12,9 +12,16 @@ permissions:
   lu7stats.manualbroadcasts:
     description: Permission to manually trigger a broadcast
     default: false
+  lu7stats.reload:
+    description: Permission to manually trigger a broadcast
+    default: false
 
 commands:
   broadcaststat:
     description: Manually triggers the broadcast of a random stat message
     usage: /broadcaststat
     permission: lu7stats.manualbroadcasts
+  lu7statsreload:
+    description: Manually reload all plugin config files
+    usage: /lu7statsreload
+    permission: lu7stats.reload
