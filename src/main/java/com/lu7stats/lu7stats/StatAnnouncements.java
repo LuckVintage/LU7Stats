@@ -31,13 +31,13 @@ public class StatAnnouncements extends JavaPlugin {
 	private String messagePrefix;
 	private int randomStatInterval; // Variable to store the interval
 
-    // Helper method to load the config
-    private void loadConfig() {
-        saveDefaultConfig();
-        config = getConfig();
-        messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Message prefix
-        randomStatInterval = config.getInt("randomStatinterval", 15); // Load the interval
-    }
+	// Helper method to load the config
+	private void loadConfig() {
+		saveDefaultConfig();
+		config = getConfig();
+		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Message prefix
+		randomStatInterval = config.getInt("randomStatinterval", 15); // Load the interval
+	}
 
 	private void loadCustomMessages() {
 		try {
@@ -86,54 +86,49 @@ public class StatAnnouncements extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-	    loadConfig(); // Load the config
 
-	    // Check if messages.json already exists before saving
-	    File messagesFile = new File(getDataFolder(), "messages.json");
-	    if (!messagesFile.exists()) {
-	        getLogger().log(Level.INFO, "Messages.json not found, generating default file...");
-	        saveResource("messages.json", false);
-	        getLogger().log(Level.INFO, "Default messages.json created successfully!");
-	    }
+		loadConfig(); // Load the config
 
-	    // Load custom messages
-	    loadCustomMessages();
+		// Check if messages.json already exists before saving
+		File messagesFile = new File(getDataFolder(), "messages.json");
+		if (!messagesFile.exists()) {
+			getLogger().log(Level.INFO, "Messages.json not found, generating default file...");
+			saveResource("messages.json", false);
+			getLogger().log(Level.INFO, "Default messages.json created successfully!");
+		}
 
-	    // Register the manual broadcast command
-	    getCommand("broadcaststat").setExecutor(this);
+		// Load custom messages
+		loadCustomMessages();
 
-	    // Register the command for reloading config and messages
-	    getCommand("lu7statsreload").setExecutor(this);
+		// Schedule the task to run based on the configured interval
+		int intervalMinutes = config.getInt("randomStatinterval", 15);
 
-	    // Schedule the initial task
-	    scheduleRandomAnnouncementTask();
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				// Read the interval from the config each time the task runs
+				int intervalMinutes = config.getInt("randomStatinterval", 15);
+				sendRandomAnnouncement();
+			}
+		}.runTaskTimer(this, 0, 20 * 60 * intervalMinutes); // 20 ticks per second, 60 seconds per minute
 
-	    // Log successful enable
-	    getLogger().log(Level.INFO, "LU7 Stats plugin has been enabled!");
+		// Register the manual broadcast command
+		getCommand("broadcaststat").setExecutor(this);
 
-	    // Start bStats
-	    if (config.getBoolean("enablebStats", true)) {
-	        int pluginId = 20633;
-	        Metrics metrics = new Metrics(this, pluginId);
-	        getLogger().log(Level.INFO,
-	                "bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
-	    }
-	}
+		// Register the command for reloading config and messages
+		getCommand("lu7statsreload").setExecutor(this);
 
-	
-	private int announcementTaskId = -1;
+		// Log successful enable
+		getLogger().log(Level.INFO, "LU7 Stats plugin has been enabled!");
 
-	private void scheduleRandomAnnouncementTask() {
-	    // Cancel the existing task if it exists
-	    if (announcementTaskId != -1) {
-	        Bukkit.getScheduler().cancelTask(announcementTaskId);
-	    }
+		// Start bStats
+		if (config.getBoolean("enablebStats", true)) {
+			int pluginId = 20633;
+			Metrics metrics = new Metrics(this, pluginId);
+			getLogger().log(Level.INFO,
+					"bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
+		}
 
-	    // Schedule a new task
-	    announcementTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-	        // Use the class field for interval directly
-	        sendRandomAnnouncement();
-	    }, 0, 20 * 60 * randomStatInterval); // 20 ticks per second, 60 seconds per minute
 	}
 
 	@Override
@@ -162,26 +157,28 @@ public class StatAnnouncements extends JavaPlugin {
 		return false;
 	}
 
-    // Command to reload files
-    private void reloadFiles(CommandSender sender) {
-        // Reload config.yml
-        reloadConfig();
-        config = getConfig();
-        messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Reload message prefix
-        randomStatInterval = config.getInt("randomStatinterval", 15); // Update the stored interval
-        sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aConfig.yml reloaded successfully!"));
+	// Command to reload files
+	private void reloadFiles(CommandSender sender) {
+		// Reload config.yml
+		reloadConfig();
+		config = getConfig();
+		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Reload message
+																									// prefix
+		randomStatInterval = config.getInt("randomStatinterval", 15); // Update the stored interval
+		sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aConfig.yml reloaded successfully!"));
 
-        // Reload messages.json
-        try {
-            statMessages.clear();
-            loadCustomMessages();
-            sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aMessages.json reloaded successfully!"));
-        } catch (Exception e) {
-            sender.sendMessage(colorize(
-                    "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &cError reloading messages.json. Check console for details."));
-            getLogger().log(Level.SEVERE, "Error reloading messages.json", e);
-        }
-    }
+		// Reload messages.json
+		try {
+			statMessages.clear();
+			loadCustomMessages();
+			sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aMessages.json reloaded successfully!"));
+		} catch (Exception e) {
+			sender.sendMessage(colorize(
+					"&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &cError reloading messages.json. Check console for details."));
+			getLogger().log(Level.SEVERE, "Error reloading messages.json", e);
+		}
+	}
+
 	private void sendManualAnnouncement(String specifiedStat, CommandSender sender) {
 		// Check if the specified stat is valid
 		boolean validStat = false;
@@ -289,21 +286,22 @@ public class StatAnnouncements extends JavaPlugin {
 		});
 	}
 
-    private void processAnnouncement(String randomStat, String topPlayer, String number) {
-        // Get the custom message for the statistic
-        String customMessage = statMessages.getOrDefault(randomStat, "&aThe top player for %stat% is: &c%topPlayer% with %number%");
-        
-        // Add the message prefix to the beginning of the message
-        String prefixedMessage = messagePrefix + " " + customMessage.replace("%stat%", randomStat.replace(":", " "))
-                .replace("%topPlayer%", topPlayer).replace("%number%", number);
+	private void processAnnouncement(String randomStat, String topPlayer, String number) {
+		// Get the custom message for the statistic
+		String customMessage = statMessages.getOrDefault(randomStat,
+				"&aThe top player for %stat% is: &c%topPlayer% with %number%");
 
-        // Broadcast the coloured announcement to all online players with the permission
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("lu7stats.seebroadcasts")) {
-                player.sendMessage(colorize(prefixedMessage));
-            }
-        }
-    }
+		// Add the message prefix to the beginning of the message
+		String prefixedMessage = messagePrefix + " " + customMessage.replace("%stat%", randomStat.replace(":", " "))
+				.replace("%topPlayer%", topPlayer).replace("%number%", number);
+
+		// Broadcast the coloured announcement to all online players with the permission
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			if (player.hasPermission("lu7stats.seebroadcasts")) {
+				player.sendMessage(colorize(prefixedMessage));
+			}
+		}
+	}
 
 	private String getNumber(String stat) {
 		// Get the raw number from PlaceholderAPI (no parsing needed)
