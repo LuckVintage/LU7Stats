@@ -8,7 +8,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Player;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
@@ -23,6 +25,10 @@ import java.util.List;
 import java.nio.file.Files;
 import java.io.IOException;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.Set;
 
 public class StatAnnouncements extends JavaPlugin {
 
@@ -30,6 +36,8 @@ public class StatAnnouncements extends JavaPlugin {
 	private Map<String, String> statMessages;
 	private String messagePrefix;
 	private int randomStatInterval; // Variable to store the interval
+	private boolean isReloading = false; // Track if the plugin is being reloaded
+	private boolean isFirstEnable = true; // Track if it's the first enable
 
 	// Helper method to load the config
 	private void loadConfig() {
@@ -98,6 +106,24 @@ public class StatAnnouncements extends JavaPlugin {
 
 		loadConfig(); // Load the config
 
+		// Check if PlaceholderAPI is present and enabled
+		if (!isPluginEnabled("PlaceholderAPI")) {
+			getLogger().log(Level.SEVERE,
+					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
+		} else {
+			// Check if the PlayerStats PlaceholderAPI expansion is registered
+			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
+				getLogger().log(Level.SEVERE,
+						"PlayerStats PlaceholderAPI expansion is not installed or enabled! LU7 Stats will NOT function as expected.");
+			}
+		}
+
+		// Check if PlayerStats is present and enabled
+		if (!isPluginEnabled("PlayerStats")) {
+			getLogger().log(Level.SEVERE,
+					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
+		}
+
 		// Check if messages.json already exists before saving
 		File messagesFile = new File(getDataFolder(), "messages.json");
 		if (!messagesFile.exists()) {
@@ -126,6 +152,9 @@ public class StatAnnouncements extends JavaPlugin {
 
 		// Register the command for reloading config and messages
 		getCommand("lu7statsreload").setExecutor(this);
+
+		// Register the health check command
+		getCommand("lu7statshealth").setExecutor(this);
 
 		// Log successful enable
 		getLogger().log(Level.INFO, "LU7 Stats plugin has been enabled!");
@@ -162,6 +191,13 @@ public class StatAnnouncements extends JavaPlugin {
 				sender.sendMessage(colorize("&cUsage: /lu7statsreload"));
 			}
 			return true;
+		} else if (label.equals("lu7statshealth")) { // Adding the new healthcheck command
+			if (args.length == 0) {
+				checkHealth(sender);
+			} else {
+				sender.sendMessage(colorize("&cUsage: /lu7statshealth"));
+			}
+			return true;
 		}
 		return false;
 	}
@@ -185,6 +221,99 @@ public class StatAnnouncements extends JavaPlugin {
 			sender.sendMessage(colorize(
 					"&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &cError reloading messages.json. Check console for details."));
 			getLogger().log(Level.SEVERE, "Error reloading messages.json", e);
+		}
+	}
+
+	private void checkHealth(CommandSender sender) {
+		List<String> errorMessages = new ArrayList<>();
+
+		// Check if PlaceholderAPI is present and enabled
+		if (!isPluginEnabled("PlaceholderAPI")) {
+			errorMessages.add("PlaceholderAPI is not installed or enabled!");
+			getLogger().log(Level.SEVERE,
+					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
+		} else {
+			// Check if the PlayerStats PlaceholderAPI expansion is registered
+			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
+				errorMessages.add("PlayerStats PlaceholderAPI expansion is not installed or enabled!");
+				getLogger().log(Level.SEVERE,
+						"PlayerStats PlaceholderAPI expansion is not installed or enabled! LU7 Stats will NOT function as expected.");
+			}
+		}
+
+		// Check if PlayerStats is present and enabled
+		if (!isPluginEnabled("PlayerStats")) {
+			errorMessages.add("PlayerStats is not installed or enabled!");
+			getLogger().log(Level.SEVERE,
+					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
+		}
+
+		// Check if config.yml exists
+		File configFile = new File(getDataFolder(), "config.yml");
+		if (!configFile.exists()) {
+			errorMessages.add("config.yml not found!");
+			getLogger().log(Level.SEVERE, "config.yml not found! LU7 Stats will NOT function as expected.");
+		}
+
+		// Check if messages.json exists
+		File messagesFile = new File(getDataFolder(), "messages.json");
+		if (!messagesFile.exists()) {
+			getLogger().log(Level.WARNING, "messages.json not found!");
+		}
+
+		// Validate the content of config.yml
+		if (!isValidConfig()) {
+			errorMessages.add("config.yml is invalid!");
+			getLogger().log(Level.SEVERE, "config.yml is invalid! LU7 Stats will NOT function as expected.");
+		}
+
+		// Validate the content of messages.json
+		if (!isValidMessages()) {
+			errorMessages.add("messages.json is invalid!");
+			getLogger().log(Level.WARNING, "messages.json is invalid!");
+		}
+
+		// Display all error messages, if any
+		for (String errorMessage : errorMessages) {
+			sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aHealth check: &c" + errorMessage));
+		}
+
+		// If there are no errors, send success message
+		if (errorMessages.isEmpty()) {
+			sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aHealth check: Plugin is healthy!"));
+			getLogger().log(Level.INFO, "Healthcheck run successfully: Plugin is healthy!");
+		}
+	}
+
+	private boolean isPlaceholderAPIExpansionInstalled(String expansionName) {
+		return PlaceholderAPI.isRegistered(expansionName);
+	}
+
+	private boolean isPluginEnabled(String pluginName) {
+		return Bukkit.getPluginManager().getPlugin(pluginName) != null
+				&& Bukkit.getPluginManager().isPluginEnabled(pluginName);
+	}
+
+	private boolean isValidConfig() {
+		try {
+			getConfig().load(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "config.yml")),
+					StandardCharsets.UTF_8));
+			return true;
+		} catch (IOException | InvalidConfigurationException e) {
+			getLogger().log(Level.SEVERE, "Error loading config.yml", e);
+			return false;
+		}
+	}
+
+	private boolean isValidMessages() {
+		try {
+			JSONObject messages = new JSONObject(new String(
+					Files.readAllBytes(new File(getDataFolder(), "messages.json").toPath()), StandardCharsets.UTF_8));
+			// Add more specific validation if needed
+			return true;
+		} catch (IOException | JSONException e) {
+			getLogger().log(Level.SEVERE, "Error loading messages.json", e);
+			return false;
 		}
 	}
 
@@ -334,4 +463,5 @@ public class StatAnnouncements extends JavaPlugin {
 		statMessages.clear();
 		getLogger().log(Level.INFO, "LU7 Stats plugin has been disabled!");
 	}
+
 }
