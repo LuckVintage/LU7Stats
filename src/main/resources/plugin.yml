@@ -25,3 +25,7 @@ commands:
     description: Manually reload all plugin config files
     usage: /lu7statsreload
     permission: lu7stats.reload
+  lu7statshealth:
+    description: Checks the LU7 Stats plugin health
+    usage: /lu7statshealth
+    permission: lu7stats.healthcheck
