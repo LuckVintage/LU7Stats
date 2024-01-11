@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -28,7 +30,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.Set;
 
 public class StatAnnouncements extends JavaPlugin {
 
@@ -36,8 +37,6 @@ public class StatAnnouncements extends JavaPlugin {
 	private Map<String, String> statMessages;
 	private String messagePrefix;
 	private int randomStatInterval; // Variable to store the interval
-	private boolean isReloading = false; // Track if the plugin is being reloaded
-	private boolean isFirstEnable = true; // Track if it's the first enable
 
 	// Helper method to load the config
 	private void loadConfig() {
@@ -106,24 +105,6 @@ public class StatAnnouncements extends JavaPlugin {
 
 		loadConfig(); // Load the config
 
-		// Check if PlaceholderAPI is present and enabled
-		if (!isPluginEnabled("PlaceholderAPI")) {
-			getLogger().log(Level.SEVERE,
-					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
-		} else {
-			// Check if the PlayerStats PlaceholderAPI expansion is registered
-			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
-				getLogger().log(Level.SEVERE,
-						"PlayerStats PlaceholderAPI expansion is not installed or enabled! LU7 Stats will NOT function as expected.");
-			}
-		}
-
-		// Check if PlayerStats is present and enabled
-		if (!isPluginEnabled("PlayerStats")) {
-			getLogger().log(Level.SEVERE,
-					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
-		}
-
 		// Check if messages.json already exists before saving
 		File messagesFile = new File(getDataFolder(), "messages.json");
 		if (!messagesFile.exists()) {
@@ -134,18 +115,6 @@ public class StatAnnouncements extends JavaPlugin {
 
 		// Load custom messages
 		loadCustomMessages();
-
-		// Schedule the task to run based on the configured interval
-		int intervalMinutes = config.getInt("randomStatinterval", 15);
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				// Read the interval from the config each time the task runs
-				int intervalMinutes = config.getInt("randomStatinterval", 15);
-				sendRandomAnnouncement();
-			}
-		}.runTaskTimer(this, 0, 20 * 60 * intervalMinutes); // 20 ticks per second, 60 seconds per minute
 
 		// Register the manual broadcast command
 		getCommand("broadcaststat").setExecutor(this);
@@ -167,6 +136,26 @@ public class StatAnnouncements extends JavaPlugin {
 					"bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
 		}
 
+		// Schedule a delayed task to perform dependency checks after a 30-second delay
+		getServer().getScheduler().runTaskLater(this, () -> {
+			checkDependencies(); // Run checkDependencies method
+		}, 600L); // 600L represents a delay of 600 ticks (30 seconds * 20 ticks/second)
+
+	}
+
+	private void scheduleStatBroadcast() {
+		// Schedule the task to run based on the configured interval
+		int intervalMinutes = config.getInt("randomStatinterval", 15);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				sendRandomAnnouncement();
+			}
+		}.runTaskTimer(this, 0, 20 * 60 * intervalMinutes); // 20 ticks per second, 60 seconds per minute
+
+		getLogger().log(Level.INFO,
+				"Stat broadcast task scheduled with an interval of " + intervalMinutes + " minutes.");
 	}
 
 	@Override
@@ -292,6 +281,39 @@ public class StatAnnouncements extends JavaPlugin {
 	private boolean isPluginEnabled(String pluginName) {
 		return Bukkit.getPluginManager().getPlugin(pluginName) != null
 				&& Bukkit.getPluginManager().isPluginEnabled(pluginName);
+	}
+
+	private void checkDependencies() {
+		// Check if PlaceholderAPI is present and enabled
+		boolean placeholderAPIEnabled = isPluginEnabled("PlaceholderAPI");
+		// Check if the PlayerStats PlaceholderAPI expansion is registered
+		boolean playerStatsEnabled = isPlaceholderAPIExpansionInstalled("PlayerStats");
+
+		// Check if PlaceholderAPI is present and enabled
+		if (!placeholderAPIEnabled) {
+			getLogger().log(Level.SEVERE,
+					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
+		} else {
+			// Check if the PlayerStats PlaceholderAPI expansion is registered
+			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
+				getLogger().log(Level.SEVERE,
+						"PlayerStats PlaceholderAPI expansion is not installed or enabled! LU7 Stats will NOT function as expected.");
+			}
+		}
+
+		// Check if PlayerStats is present and enabled
+		if (!isPluginEnabled("PlayerStats")) {
+			getLogger().log(Level.SEVERE,
+					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
+		}
+
+		// Run scheduleStatBroadcast only if all plugins are enabled
+		if (placeholderAPIEnabled && playerStatsEnabled) {
+			scheduleStatBroadcast();
+		} else {
+			// Log the severe missing dependencies error
+			getLogger().log(Level.SEVERE, "Due to missing dependencies, automatic stat broadcasts have been disabled.");
+		}
 	}
 
 	private boolean isValidConfig() {
