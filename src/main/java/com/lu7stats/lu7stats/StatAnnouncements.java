@@ -9,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -37,13 +35,27 @@ public class StatAnnouncements extends JavaPlugin {
 	private Map<String, String> statMessages;
 	private String messagePrefix;
 	private int randomStatInterval; // Variable to store the interval
+	// Check if debug mode is enabled in the config
+	boolean debugModeEnabled;
 
 	// Helper method to load the config
 	private void loadConfig() {
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Attempting to load configuration...");
+		}
 		saveDefaultConfig();
 		config = getConfig();
 		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Message prefix
-		randomStatInterval = config.getInt("randomStatinterval", 15); // Load the interval
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Loaded messagePrefix: " + messagePrefix);
+		}
+		randomStatInterval = config.getInt("randomStatInterval", 15); // Load the interval
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Loaded randomStatInterval: " + randomStatInterval);
+		}
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Finished loading configuration");
+		}
 	}
 
 	private void loadCustomMessages() {
@@ -105,6 +117,13 @@ public class StatAnnouncements extends JavaPlugin {
 
 		loadConfig(); // Load the config
 
+		debugModeEnabled = config.getBoolean("enableDebug", false);
+
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO,
+					"DEBUG: Debug mode is enabled, LU7 Stats will log extra messages to the console. This should be disabled when in production.");
+		}
+
 		// Check if messages.json already exists before saving
 		File messagesFile = new File(getDataFolder(), "messages.json");
 		if (!messagesFile.exists()) {
@@ -117,27 +136,71 @@ public class StatAnnouncements extends JavaPlugin {
 		loadCustomMessages();
 
 		// Register the manual broadcast command
-		getCommand("broadcaststat").setExecutor(this);
+		try {
+			getCommand("broadcaststat").setExecutor(this);
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Loaded command 'broadcaststat' successfully!");
+			}
+		} catch (Exception e) {
+			// Log an error message if an exception occurs
+			getLogger().log(Level.SEVERE, "Error loading command: broadcaststat", e);
+		}
 
 		// Register the command for reloading config and messages
-		getCommand("lu7statsreload").setExecutor(this);
+		try {
+			getCommand("lu7statsreload").setExecutor(this);
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Loaded command 'statsreload' successfully!");
+			}
+		} catch (Exception e) {
+			// Log an error message if an exception occurs
+			getLogger().log(Level.SEVERE, "Error loading command: statsreload", e);
+		}
 
 		// Register the health check command
-		getCommand("lu7statshealth").setExecutor(this);
+		try {
+			getCommand("lu7statshealth").setExecutor(this);
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Loaded command 'statshealth' successfully!");
+			}
+		} catch (Exception e) {
+			// Log an error message if an exception occurs
+			getLogger().log(Level.SEVERE, "Error loading command: statshealth", e);
+		}
 
 		// Log successful enable
 		getLogger().log(Level.INFO, "LU7 Stats plugin has been enabled!");
 
-		// Start bStats
+		// Check if bStats is enabled in the config
 		if (config.getBoolean("enablebStats", true)) {
-			int pluginId = 20633;
-			Metrics metrics = new Metrics(this, pluginId);
-			getLogger().log(Level.INFO,
-					"bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Initializing bStats...");
+			}
+			// If bStats is enabled in config, attempt to initialise it
+			try {
+				int pluginId = 20633;
+				Metrics metrics = new Metrics(this, pluginId);
+				getLogger().log(Level.INFO,
+						"DEBUG: bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
+			} catch (Exception e) {
+				// Log an error message if an exception occurs during bStats initialization
+				getLogger().log(Level.SEVERE, "Error initializing bStats", e);
+
+				if (debugModeEnabled) {
+					getLogger().log(Level.INFO, "DEBUG: Skipping bStats initialization due to an error.");
+				}
+			}
+		} else {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Skipping bStats initialization as per config.");
+			}
 		}
 
 		// Schedule a delayed task to perform dependency checks after a 30-second delay
 		getServer().getScheduler().runTaskLater(this, () -> {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Running dependency checks...");
+			}
 			checkDependencies(); // Run checkDependencies method
 		}, 600L); // 600L represents a delay of 600 ticks (30 seconds * 20 ticks/second)
 
@@ -145,7 +208,7 @@ public class StatAnnouncements extends JavaPlugin {
 
 	private void scheduleStatBroadcast() {
 		// Schedule the task to run based on the configured interval
-		int intervalMinutes = config.getInt("randomStatinterval", 15);
+		int intervalMinutes = config.getInt("randomStatInterval", 15);
 
 		new BukkitRunnable() {
 			@Override
@@ -161,6 +224,9 @@ public class StatAnnouncements extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (label.equals("broadcaststat")) {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: 'broadcaststat' command triggered by " + sender);
+			}
 			if (args.length == 0) {
 				// Manually trigger the broadcast with a random stat
 				sendRandomAnnouncement();
@@ -174,6 +240,9 @@ public class StatAnnouncements extends JavaPlugin {
 			}
 			return true;
 		} else if (label.equals("lu7statsreload")) {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: 'statsreload' command triggered by " + sender);
+			}
 			if (args.length == 0) {
 				reloadFiles(sender);
 			} else {
@@ -181,6 +250,9 @@ public class StatAnnouncements extends JavaPlugin {
 			}
 			return true;
 		} else if (label.equals("lu7statshealth")) { // Adding the new healthcheck command
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: 'statshealth' command triggered by " + sender);
+			}
 			if (args.length == 0) {
 				checkHealth(sender);
 			} else {
@@ -198,7 +270,7 @@ public class StatAnnouncements extends JavaPlugin {
 		config = getConfig();
 		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Reload message
 																									// prefix
-		randomStatInterval = config.getInt("randomStatinterval", 15); // Update the stored interval
+		randomStatInterval = config.getInt("randomStatInterval", 15); // Update the stored interval
 		sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aConfig.yml reloaded successfully!"));
 
 		// Reload messages.json
@@ -275,7 +347,12 @@ public class StatAnnouncements extends JavaPlugin {
 	}
 
 	private boolean isPlaceholderAPIExpansionInstalled(String expansionName) {
-		return PlaceholderAPI.isRegistered(expansionName);
+		// Check if PlaceholderAPI is present and enabled
+		if (isPluginEnabled("PlaceholderAPI")) {
+			// Check if the PlaceholderAPI expansion is registered
+			return PlaceholderAPI.isRegistered(expansionName);
+		}
+		return false;
 	}
 
 	private boolean isPluginEnabled(String pluginName) {
@@ -284,15 +361,26 @@ public class StatAnnouncements extends JavaPlugin {
 	}
 
 	private void checkDependencies() {
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Checking dependencies...");
+		}
 		// Check if PlaceholderAPI is present and enabled
 		boolean placeholderAPIEnabled = isPluginEnabled("PlaceholderAPI");
+		if (config.getBoolean("enableDebug", false)) {
+			getLogger().log(Level.INFO, "DEBUG: PlaceholderAPI Enabled: " + placeholderAPIEnabled);
+		}
+
 		// Check if the PlayerStats PlaceholderAPI expansion is registered
 		boolean playerStatsEnabled = isPlaceholderAPIExpansionInstalled("PlayerStats");
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: PlayerStats Expansion Enabled: " + playerStatsEnabled);
+		}
 
 		// Check if PlaceholderAPI is present and enabled
 		if (!placeholderAPIEnabled) {
 			getLogger().log(Level.SEVERE,
 					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
+			return; // Early return if PlaceholderAPI is not present
 		} else {
 			// Check if the PlayerStats PlaceholderAPI expansion is registered
 			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
@@ -302,6 +390,10 @@ public class StatAnnouncements extends JavaPlugin {
 		}
 
 		// Check if PlayerStats is present and enabled
+		boolean playerStatsPluginEnabled = isPluginEnabled("PlayerStats");
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: PlayerStats Plugin Enabled: " + playerStatsPluginEnabled);
+		}
 		if (!isPluginEnabled("PlayerStats")) {
 			getLogger().log(Level.SEVERE,
 					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
@@ -309,6 +401,9 @@ public class StatAnnouncements extends JavaPlugin {
 
 		// Run scheduleStatBroadcast only if all plugins are enabled
 		if (placeholderAPIEnabled && playerStatsEnabled) {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Dependencies are satisfied. Scheduling stat broadcasts...");
+			}
 			scheduleStatBroadcast();
 		} else {
 			// Log the severe missing dependencies error
@@ -340,7 +435,9 @@ public class StatAnnouncements extends JavaPlugin {
 	}
 
 	private void sendManualAnnouncement(String specifiedStat, CommandSender sender) {
-		// Check if the specified stat is valid
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Attempting to process manual stat broadcast");
+		}
 		boolean validStat = false;
 		for (String stat : statistics) {
 			if (stat.equalsIgnoreCase(specifiedStat)) {
@@ -350,36 +447,35 @@ public class StatAnnouncements extends JavaPlugin {
 		}
 
 		if (validStat) {
-			// Use CompletableFuture for asynchronous processing
-			CompletableFuture<String> topPlayerFuture1 = CompletableFuture
-					.supplyAsync(() -> getTopPlayer(specifiedStat));
-			CompletableFuture<String> numberFuture1 = CompletableFuture.supplyAsync(() -> getNumber(specifiedStat));
-
-			// Introduce a small delay (adjust the time as needed)
-			try {
-				TimeUnit.MILLISECONDS.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Selected statistic: " + specifiedStat);
 			}
+			// Inform the command sender first
+			sender.sendMessage(colorize(
+					"&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aBroadcast triggered manually for stat: &e" + specifiedStat));
 
-			CompletableFuture<String> topPlayerFuture2 = CompletableFuture
-					.supplyAsync(() -> getTopPlayer(specifiedStat));
-			CompletableFuture<String> numberFuture2 = CompletableFuture.supplyAsync(() -> getNumber(specifiedStat));
+			// Use BukkitScheduler to introduce a delay and run tasks asynchronously
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: Attempting to request stat values from PlaceHolderAPI...");
+			}
+			getServer().getScheduler().runTaskAsynchronously(this, () -> {
+				// Fetch the first set of results
+				String topPlayer1 = getTopPlayer(specifiedStat);
+				String number1 = getNumber(specifiedStat);
 
-			CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(topPlayerFuture1, numberFuture1,
-					topPlayerFuture2, numberFuture2);
+				// Introduce a delay (adjust ticks as needed, 20 ticks = 1 second)
+				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+					// Fetch the second set of results
+					String topPlayer2 = getTopPlayer(specifiedStat);
+					String number2 = getNumber(specifiedStat);
+					if (debugModeEnabled) {
+						getLogger().log(Level.INFO, "DEBUG: Retrieved topPlayer successfully: " + topPlayer2);
+						getLogger().log(Level.INFO, "DEBUG: Retrieved number successfully: " + number2);
+					}
 
-			// Wait for both CompletableFuture to complete
-			combinedFuture.thenAcceptAsync(ignored -> {
-				// Inform the command sender first
-				sender.sendMessage(
-						colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aBroadcast triggered manually for stat: &e"
-								+ specifiedStat));
-
-				// Use the second set of results
-				String topPlayer = topPlayerFuture2.join();
-				String number = numberFuture2.join();
-				processAnnouncement(specifiedStat, topPlayer, number);
+					// Process and send the announcement with the obtained values
+					processAnnouncement(specifiedStat, topPlayer2, number2);
+				}, 20L); // 20 ticks delay
 			});
 		} else {
 			// If the specified stat is not found, send an error message
@@ -405,44 +501,73 @@ public class StatAnnouncements extends JavaPlugin {
 	}
 
 	private void sendRandomAnnouncement() {
-		// Check if there are players online
-		if (Bukkit.getOnlinePlayers().isEmpty()) {
-			return;
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Attempting to process random stat broadcast");
 		}
 
 		// Randomly pick one statistic to announce
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Selecting random statistic from array...");
+		}
 		Random random = new Random();
 		String randomStat = statistics[random.nextInt(statistics.length)];
-
-		// Use CompletableFuture for asynchronous processing
-		CompletableFuture<String> topPlayerFuture1 = CompletableFuture.supplyAsync(() -> getTopPlayer(randomStat));
-		CompletableFuture<String> numberFuture1 = CompletableFuture.supplyAsync(() -> getNumber(randomStat));
-
-		CompletableFuture<Void> combinedFuture1 = CompletableFuture.allOf(topPlayerFuture1, numberFuture1);
-
-		// Introduce a small delay (adjust the time as needed)
-		try {
-			TimeUnit.MILLISECONDS.sleep(50);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Selected random statistic: " + randomStat);
 		}
 
-		CompletableFuture<String> topPlayerFuture2 = CompletableFuture.supplyAsync(() -> getTopPlayer(randomStat));
-		CompletableFuture<String> numberFuture2 = CompletableFuture.supplyAsync(() -> getNumber(randomStat));
+		// Use BukkitScheduler to introduce a delay and run tasks asynchronously
+		if (debugModeEnabled) {
+			getLogger().log(Level.INFO, "DEBUG: Attempting to request stat values from PlaceHolderAPI...");
+		}
+		getServer().getScheduler().runTaskAsynchronously(this, () -> {
+			// Use CompletableFuture for asynchronous processing
+			CompletableFuture<String> topPlayerFuture1 = CompletableFuture.supplyAsync(() -> getTopPlayer(randomStat));
+			CompletableFuture<String> numberFuture1 = CompletableFuture.supplyAsync(() -> getNumber(randomStat));
 
-		CompletableFuture<Void> combinedFuture2 = CompletableFuture.allOf(topPlayerFuture2, numberFuture2);
+			CompletableFuture<Void> combinedFuture1 = CompletableFuture.allOf(topPlayerFuture1, numberFuture1);
 
-		// Wait for both CompletableFuture to complete
-		combinedFuture1.thenAcceptAsync(ignored -> {
-			String topPlayer = topPlayerFuture1.join();
-			String number = numberFuture1.join();
-			// Do not send the message here
-		});
+			// Introduce a small delay (adjust the time as needed)
+			try {
+				TimeUnit.MILLISECONDS.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
-		combinedFuture2.thenAcceptAsync(ignored -> {
-			String topPlayer = topPlayerFuture2.join();
-			String number = numberFuture2.join();
-			processAnnouncement(randomStat, topPlayer, number);
+			CompletableFuture<String> topPlayerFuture2 = CompletableFuture.supplyAsync(() -> getTopPlayer(randomStat));
+			CompletableFuture<String> numberFuture2 = CompletableFuture.supplyAsync(() -> getNumber(randomStat));
+
+			CompletableFuture<Void> combinedFuture2 = CompletableFuture.allOf(topPlayerFuture2, numberFuture2);
+
+			// Wait for both CompletableFuture to complete
+			combinedFuture1.thenAcceptAsync(ignored -> {
+				String topPlayer = topPlayerFuture1.join();
+				String number = numberFuture1.join();
+				// Do not send the message here
+			});
+
+			combinedFuture2.thenAcceptAsync(ignored -> {
+				// Introduce a delay before sending the message
+				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+					String topPlayer = topPlayerFuture2.join();
+					String number = numberFuture2.join();
+					if (debugModeEnabled) {
+						getLogger().log(Level.INFO, "DEBUG: Retrieved topPlayer successfully: " + topPlayer);
+						getLogger().log(Level.INFO, "DEBUG: Retrieved number successfully: " + number);
+					}
+
+					// Check if the number value is '0' and pick another random stat if true
+					if ("0".equals(number)) {
+						if (debugModeEnabled) {
+							getLogger().log(Level.INFO, "DEBUG: Chosen stat has no top player, picking another...");
+						}
+						sendRandomAnnouncement();
+						return;
+					}
+
+					// Process and send the announcement with the obtained values
+					processAnnouncement(randomStat, topPlayer, number);
+				}, 20L); // 20 ticks delay (adjust as needed)
+			});
 		});
 	}
 
@@ -455,12 +580,32 @@ public class StatAnnouncements extends JavaPlugin {
 		String prefixedMessage = messagePrefix + " " + customMessage.replace("%stat%", randomStat.replace(":", " "))
 				.replace("%topPlayer%", topPlayer).replace("%number%", number);
 
+		// Variable to track if the message has been sent successfully to at least one
+		// player
+		boolean messageSent = false;
+
 		// Broadcast the coloured announcement to all online players with the permission
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.hasPermission("lu7stats.seebroadcasts")) {
-				player.sendMessage(colorize(prefixedMessage));
+		try {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (player.hasPermission("lu7stats.seebroadcasts")) {
+					player.sendMessage(colorize(prefixedMessage));
+					if (!messageSent && player.isOnline()) {
+						// Log the debug message if broadcast was sent successfully
+						messageSent = true;
+						if (debugModeEnabled) {
+							getLogger().log(Level.INFO,
+									"DEBUG: Stat broadcast sent successfully: Message: " + prefixedMessage);
+						}
+					}
+				}
 			}
+		} catch (Exception e) {
+			// If an exception occurs, log the error message in the debug log
+			messageSent = false; // Set messageSent to false in case of an error
+			getLogger().log(Level.SEVERE,
+					"Something went wrong while attempting to send the stat broadcast: " + e.getMessage());
 		}
+
 	}
 
 	private String getNumber(String stat) {
