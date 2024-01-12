@@ -5,3 +5,4 @@ randomStatinterval: 15 # Number in minutes. Takes affect after next server resta
 
 # Other options
 enablebStats: true # This has no impact on server performance, we strongly encourage keeping bStats enabled. Default is true.
+enableDebug: false # Sends extra debug messages to the server console. Default is false.
