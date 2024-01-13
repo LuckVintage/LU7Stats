@@ -133,3 +133,4 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - break_item:flint_and_steel
 - break_item:shield
 - break_item:stone_pickaxe
+- mine_block:ancient_debris
