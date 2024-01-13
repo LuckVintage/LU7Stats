@@ -34,6 +34,7 @@ public class StatAnnouncements extends JavaPlugin {
 	private FileConfiguration config;
 	private Map<String, String> statMessages;
 	private String messagePrefix;
+	private String lastBroadcastedStat;
 	private int randomStatInterval; // Variable to store the interval
 	// Check if debug mode is enabled in the config
 	boolean debugModeEnabled;
@@ -110,7 +111,7 @@ public class StatAnnouncements extends JavaPlugin {
 			"break_item:netherite_sword", "break_item:netherite_pickaxe", "break_item:netherite_hoe",
 			"break_item:netherite_shovel", "break_item:trident", "break_item:bow", "break_item:crossbow",
 			"break_item:elytra", "break_item:fishing_rod", "break_item:elytra", "break_item:flint_and_steel",
-			"break_item:shield" };
+			"break_item:shield", "mine_block:ancient_debris" };
 
 	@Override
 	public void onEnable() {
@@ -267,6 +268,7 @@ public class StatAnnouncements extends JavaPlugin {
 	private void reloadFiles(CommandSender sender) {
 		// Reload config.yml
 		reloadConfig();
+		debugModeEnabled = config.getBoolean("enableDebug", false);
 		config = getConfig();
 		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]"); // Reload message
 																									// prefix
@@ -501,8 +503,17 @@ public class StatAnnouncements extends JavaPlugin {
 	}
 
 	private void sendRandomAnnouncement() {
+
 		if (debugModeEnabled) {
 			getLogger().log(Level.INFO, "DEBUG: Attempting to process random stat broadcast");
+		}
+
+		// Check if there are players online
+		if (Bukkit.getOnlinePlayers().isEmpty()) {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO, "DEBUG: There are no players online, skipping stat broadcast.");
+			}
+			return;
 		}
 
 		// Randomly pick one statistic to announce
@@ -564,8 +575,20 @@ public class StatAnnouncements extends JavaPlugin {
 						return;
 					}
 
+					// Check if the last broadcasted stat is the same as the current random stat
+					if (lastBroadcastedStat != null && lastBroadcastedStat.equals(randomStat)) {
+						if (debugModeEnabled) {
+							getLogger().log(Level.INFO,
+									"DEBUG: Chosen stat is the same as the last broadcasted stat, picking another...");
+						}
+						sendRandomAnnouncement();
+						return;
+					}
+
 					// Process and send the announcement with the obtained values
 					processAnnouncement(randomStat, topPlayer, number);
+					// Save the last broadcasted stat
+					lastBroadcastedStat = randomStat;
 				}, 20L); // 20 ticks delay (adjust as needed)
 			});
 		});
