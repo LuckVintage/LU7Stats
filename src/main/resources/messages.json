@@ -114,5 +114,6 @@
   "break_item:elytra": "&aThe player who has broken the most elytras is: &c%topPlayer% &awith &c%number% &aelytras broken!",
   "break_item:fishing_rod": "&aThe player who has broken the most fishing rods is: &c%topPlayer% &awith &c%number% &afishing rods broken!",
   "break_item:flint_and_steel": "&aThe player who has broken the most flint and steels is: &c%topPlayer% &awith &c%number% &aflint and steels broken!",
-  "break_item:shield": "&aThe player who has broken the most shields is: &c%topPlayer% &awith &c%number% &ashields broken!"
+  "break_item:shield": "&aThe player who has broken the most shields is: &c%topPlayer% &awith &c%number% &ashields broken!",
+  "mine_block:ancient_debris": "&aThe player who has mined the most ancient debris is: &c%topPlayer% &awith &c%number% &aancient debris!"
   }
