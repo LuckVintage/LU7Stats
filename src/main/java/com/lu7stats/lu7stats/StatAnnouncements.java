@@ -91,10 +91,13 @@ public class StatAnnouncements extends JavaPlugin {
 			"sleep_in_bed", "sneak_time", "sprint_one_cm", "swim_one_cm", "talked_to_villager", "traded_with_villager",
 			"walk_on_water_one_cm", "walk_one_cm", "walk_under_water_one_cm", "mine_block:oak_log",
 			"mine_block:spruce_log", "mine_block:birch_log", "mine_block:jungle_log", "mine_block:dark_oak_log",
-			"mine_block:mangrove_log", "mine_block:cherry_blossom_log", "mine_block:warped_log",
-			"mine_block:deepslate_diamond_ore", "mine_block:deepslate", "mine_block:grass_block", "mine_block:wheat",
-			"mine_block:sugar_cane", "mine_block:potatoes", "mine_block:acacia_log", "mine_block:beetroots",
-			"mine_block:bamboo", "mine_block:sand", "mine_block:netherrack", "mine_block:deepslate_iron_ore",
+			"mine_block:mangrove_log", "mine_block:warped_log", "mine_block:deepslate_diamond_ore",
+			"mine_block:deepslate", "mine_block:grass_block", "mine_block:wheat", "mine_block:sugar_cane",
+			"mine_block:potatoes", "mine_block:acacia_log", "mine_block:beetroots", "mine_block:bamboo",
+			"mine_block:carrots", "mine_block:melon", "mine_block:pumpkin", "mine_block:cocoa",
+			"mine_block:sweet_berry_bush", "mine_block:cactus", "mine_block:brown_mushroom", "mine_block:red_mushroom",
+			"mine_block:kelp_plant", "mine_block:sea_pickle", "mine_block:nether_wart", "mine_block:chorus_plant",
+			"mine_block:warped_fungus", "mine_block:sand", "mine_block:netherrack", "mine_block:deepslate_iron_ore",
 			"mine_block:deepslate_redstone_ore", "mine_block:deepslate_lapis_ore", "mine_block:deepslate_coal_ore",
 			"mine_block:deepslate_gold_ore", "mine_block:deepslate_copper_ore", "mine_block:deepslate_iron_ore",
 			"kill_entity:zombie", "kill_entity:spider", "kill_entity:cave_spider", "kill_entity:creeper",
@@ -183,7 +186,7 @@ public class StatAnnouncements extends JavaPlugin {
 				int pluginId = 20633;
 				Metrics metrics = new Metrics(this, pluginId);
 				getLogger().log(Level.INFO,
-						"DEBUG: bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
+						"bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
 			} catch (Exception e) {
 				// Log an error message if an exception occurs during bStats initialization
 				getLogger().log(Level.SEVERE, "Error initializing bStats", e);
