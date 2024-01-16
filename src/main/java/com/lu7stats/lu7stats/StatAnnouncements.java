@@ -104,18 +104,19 @@ public class StatAnnouncements extends JavaPlugin {
 			"kill_entity:cow", "kill_entity:sheep", "kill_entity:enderman", "kill_entity:guardian",
 			"kill_entity:iron_golem", "kill_entity:magma_cube", "kill_entity:phantom", "kill_entity:villager",
 			"kill_entity:vex", "kill_entity:strider", "kill_entity:squid", "kill_entity:silverfish",
-			"kill_entity:piglin_brute", "kill_entity:piglin", "kill_entity:blaze", "kill_entity:chicken",
-			"kill_entity:pig", "kill_entity:slime", "kill_entity:witch", "mine_block:deepslate_emerald_ore",
-			"kill_entity:skeleton", "kill_entity:ghast", "mine_block:clay", "break_item:stone_sword",
-			"break_item:stone_axe", "break_item:stone_pickaxe", "break_item:stone_hoe", "break_item:stone_shovel",
-			"break_item:wooden_axe", "break_item:wooden_sword", "break_item:wooden_pickaxe", "break_item:wooden_hoe",
-			"break_item:wooden_shovel", "break_item:iron_axe", "break_item:iron_sword", "break_item:iron_pickaxe",
-			"break_item:iron_hoe", "break_item:iron_shovel", "break_item:diamond_axe", "break_item:diamond_sword",
-			"break_item:diamond_pickaxe", "break_item:diamond_hoe", "break_item:diamond_shovel",
-			"break_item:netherite_axe", "break_item:netherite_sword", "break_item:netherite_pickaxe",
-			"break_item:netherite_hoe", "break_item:netherite_shovel", "break_item:trident", "break_item:bow",
-			"break_item:crossbow", "break_item:elytra", "break_item:fishing_rod", "break_item:elytra",
-			"break_item:flint_and_steel", "break_item:shield", "mine_block:ancient_debris" };
+			"kill_entity:piglin_brute", "kill_entity:piglin", "kill_entity:blaze", "kill_entity:wither_skeleton",
+			"kill_entity:chicken", "kill_entity:pig", "kill_entity:slime", "kill_entity:witch",
+			"mine_block:deepslate_emerald_ore", "kill_entity:skeleton", "kill_entity:ghast", "mine_block:clay",
+			"break_item:stone_sword", "break_item:stone_axe", "break_item:stone_pickaxe", "break_item:stone_hoe",
+			"break_item:stone_shovel", "break_item:wooden_axe", "break_item:wooden_sword", "break_item:wooden_pickaxe",
+			"break_item:wooden_hoe", "break_item:wooden_shovel", "break_item:iron_axe", "break_item:iron_sword",
+			"break_item:iron_pickaxe", "break_item:iron_hoe", "break_item:iron_shovel", "break_item:diamond_axe",
+			"break_item:diamond_sword", "break_item:diamond_pickaxe", "break_item:diamond_hoe",
+			"break_item:diamond_shovel", "break_item:netherite_axe", "break_item:netherite_sword",
+			"break_item:netherite_pickaxe", "break_item:netherite_hoe", "break_item:netherite_shovel",
+			"break_item:trident", "break_item:bow", "break_item:crossbow", "break_item:elytra",
+			"break_item:fishing_rod", "break_item:elytra", "break_item:flint_and_steel", "break_item:shield",
+			"mine_block:ancient_debris" };
 
 	@Override
 	public void onEnable() {
