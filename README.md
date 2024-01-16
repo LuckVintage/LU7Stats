@@ -89,6 +89,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - kill_entity:vex
 - kill_entity:villager
 - kill_entity:witch
+- kill_entity:wither_skeleton
 - kill_entity:zombie
 - leave_game
 - mine_block:acacia_log
