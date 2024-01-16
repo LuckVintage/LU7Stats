@@ -61,6 +61,7 @@
   "kill_entity:witch": "&aThe player who has killed the most witches is: &c%topPlayer% &awith &c%number% &awitch kills!",
   "kill_entity:skeleton": "&aThe player who has killed the most skeletons is: &c%topPlayer% &awith &c%number% &askeleton kills!",
   "kill_entity:ghast": "&aThe player who has killed the most ghasts is: &c%topPlayer% &awith &c%number% &aghast kills!",
+  "kill_entity:wither_skeleton": "&aThe player who has killed the most wither skeletons is: &c%topPlayer% &awith &c%number% &awither skeleton kills!",
 
   "break_item:stone_sword": "&aThe player who has broken the most stone swords is: &c%topPlayer% &awith &c%number% &aswords broken!",
   "break_item:stone_axe": "&aThe player who has broken the most stone axes is: &c%topPlayer% &awith &c%number% &aaxes broken!",
