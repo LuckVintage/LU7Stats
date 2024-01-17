@@ -139,5 +139,19 @@
   "mine_block:jungle_log": "&aThe player who has mined the most jungle logs is: &c%topPlayer% &awith &c%number% &ajungle logs!",
   "mine_block:dark_oak_log": "&aThe player who has mined the most dark oak logs is: &c%topPlayer% &awith &c%number% &adark oak logs!",
   "mine_block:mangrove_log": "&aThe player who has mined the most mangrove logs is: &c%topPlayer% &awith &c%number% &amangrove logs!",
-  "mine_block:warped_log": "&aThe player who has mined the most warped logs is: &c%topPlayer% &awith &c%number% &awarped logs!"
+  "mine_block:warped_log": "&aThe player who has mined the most warped logs is: &c%topPlayer% &awith &c%number% &awarped logs!",
+
+  "craft_item:netherite_ingot": "&aThe player who has crafted the most netherite ingots is: &c%topPlayer% &awith &c%number% &anetherite ingots!",
+
+  "craft_item:oak_planks": "&aThe player who has crafted the most oak planks is: &c%topPlayer% &awith &c%number% &aoak planks!",
+  "craft_item:birch_planks": "&aThe player who has crafted the most birch planks is: &c%topPlayer% &awith &c%number% &abirch planks!",
+  "craft_item:spruce_planks": "&aThe player who has crafted the most spruce planks is: &c%topPlayer% &awith &c%number% &aspruce planks!",
+  "craft_item:dark_oak_planks": "&aThe player who has crafted the most dark oak planks is: &c%topPlayer% &awith &c%number% &adark oak planks!",
+  "craft_item:cherry_planks": "&aThe player who has crafted the most cherry planks is: &c%topPlayer% &awith &c%number% &acherry planks!",
+  "craft_item:acacia_planks": "&aThe player who has crafted the most acacia planks is: &c%topPlayer% &awith &c%number% &aacacia planks!",
+  "craft_item:bamboo_planks": "&aThe player who has crafted the most bamboo planks is: &c%topPlayer% &awith &c%number% &abamboo planks!",
+  "craft_item:crimson_planks": "&aThe player who has crafted the most crimson planks is: &c%topPlayer% &awith &c%number% &acrimson planks!",
+  "craft_item:jungle_planks": "&aThe player who has crafted the most jungle planks is: &c%topPlayer% &awith &c%number% &ajungle planks!",
+  "craft_item:mangrove_planks": "&aThe player who has crafted the most mangrove planks is: &c%topPlayer% &awith &c%number% &amangrove planks!",
+  "craft_item:warped_planks": "&aThe player who has crafted the most warped planks is: &c%topPlayer% &awith &c%number% &awarped planks!"
 }
