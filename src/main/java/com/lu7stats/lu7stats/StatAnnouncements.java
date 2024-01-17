@@ -116,6 +116,10 @@ public class StatAnnouncements extends JavaPlugin {
 			"break_item:netherite_pickaxe", "break_item:netherite_hoe", "break_item:netherite_shovel",
 			"break_item:trident", "break_item:bow", "break_item:crossbow", "break_item:elytra",
 			"break_item:fishing_rod", "break_item:elytra", "break_item:flint_and_steel", "break_item:shield",
+			"craft_item:netherite_ingot", "craft_item:oak_planks", "craft_item:birch_planks",
+			"craft_item:spruce_planks", "craft_item:dark_oak_planks", "craft_item:cherry_planks",
+			"craft_item:acacia_planks", "craft_item:bamboo_planks", "craft_item:crimson_planks",
+			"craft_item:jungle_planks", "craft_item:mangrove_planks", "craft_item:warped_planks",
 			"mine_block:ancient_debris" };
 
 	@Override
