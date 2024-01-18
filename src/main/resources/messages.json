@@ -141,8 +141,6 @@
   "mine_block:mangrove_log": "&aThe player who has mined the most mangrove logs is: &c%topPlayer% &awith &c%number% &amangrove logs!",
   "mine_block:warped_log": "&aThe player who has mined the most warped logs is: &c%topPlayer% &awith &c%number% &awarped logs!",
 
-  "craft_item:netherite_ingot": "&aThe player who has crafted the most netherite ingots is: &c%topPlayer% &awith &c%number% &anetherite ingots!",
-
   "craft_item:oak_planks": "&aThe player who has crafted the most oak planks is: &c%topPlayer% &awith &c%number% &aoak planks!",
   "craft_item:birch_planks": "&aThe player who has crafted the most birch planks is: &c%topPlayer% &awith &c%number% &abirch planks!",
   "craft_item:spruce_planks": "&aThe player who has crafted the most spruce planks is: &c%topPlayer% &awith &c%number% &aspruce planks!",
@@ -153,5 +151,15 @@
   "craft_item:crimson_planks": "&aThe player who has crafted the most crimson planks is: &c%topPlayer% &awith &c%number% &acrimson planks!",
   "craft_item:jungle_planks": "&aThe player who has crafted the most jungle planks is: &c%topPlayer% &awith &c%number% &ajungle planks!",
   "craft_item:mangrove_planks": "&aThe player who has crafted the most mangrove planks is: &c%topPlayer% &awith &c%number% &amangrove planks!",
-  "craft_item:warped_planks": "&aThe player who has crafted the most warped planks is: &c%topPlayer% &awith &c%number% &awarped planks!"
+  "craft_item:warped_planks": "&aThe player who has crafted the most warped planks is: &c%topPlayer% &awith &c%number% &awarped planks!",
+
+  "craft_item:netherite_ingot": "&aThe player who has crafted the most netherite ingots is: &c%topPlayer% &awith &c%number% &anetherite ingots!",
+  "craft_item:crafting_table" : "&aThe player who has crafted the most crafting tables is: &c%topPlayer% &awith &c%number% &acrafting tables!",
+  "craft_item:furnace": "&aThe player who has crafted the most furnaces is: &c%topPlayer% &awith &c%number% &afurnaces!",
+  "craft_item:anvil": "&aThe player who has crafted the most anvils is: &c%topPlayer% &awith &c%number% &aanvils!",
+  "craft_item:enchanting_table": "&aThe player who has crafted the most enchanting tables is: &c%topPlayer% &awith &c%number% &aenchanting tables!",
+  "craft_item:brewing_stand": "&aThe player who has crafted the most brewing stands is: &c%topPlayer% &awith &c%number% &abrewing stands!",
+  "craft_item:white_bed": "&aThe player who has crafted the most white beds is: &c%topPlayer% &awith &c%number% &awhite beds!",
+  "craft_item:chest": "&aThe player who has crafted the most chests is: &c%topPlayer% &awith &c%number% &achests!",
+  "craft_item:ender_chest": "&aThe player who has crafted the most ender chests is: &c%topPlayer% &awith &c%number% &aender chests!"
 }
