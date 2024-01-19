@@ -122,7 +122,8 @@ public class StatAnnouncements extends JavaPlugin {
 			"craft_item:jungle_planks", "craft_item:mangrove_planks", "craft_item:warped_planks",
 			"mine_block:ancient_debris", "craft_item:crafting_table", "craft_item:furnace", "craft_item:anvil",
 			"craft_item:enchanting_table", "craft_item:brewing_stand", "craft_item:white_bed", "craft_item:chest",
-			"craft_item:ender_chest" };
+			"craft_item:ender_chest", "craft_item:golden_apple", "craft_item:bread", "craft_item:shield",
+			"craft_item:shears" };
 
 	@Override
 	public void onEnable() {
