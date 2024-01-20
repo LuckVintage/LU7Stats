@@ -57,7 +57,9 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - craft_item:acacia_planks
 - craft_item:anvil
 - craft_item:bamboo_planks
+- craft_item:beacon
 - craft_item:birch_planks
+- craft_item:bone_meal
 - craft_item:bread
 - craft_item:brewing_stand
 - craft_item:cherry_planks
@@ -68,6 +70,8 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - craft_item:enchanting_table
 - craft_item:ender_chest
 - craft_item:furnace
+- craft_item:glass
+- craft_item:glass_bottle
 - craft_item:golden_apple
 - craft_item:jungle_planks
 - craft_item:mangrove_planks
@@ -76,6 +80,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - craft_item:shears
 - craft_item:shield
 - craft_item:spruce_planks
+- craft_item:tinted_glass
 - craft_item:warped_planks
 - craft_item:white_bed
 - crouch_one_cm
