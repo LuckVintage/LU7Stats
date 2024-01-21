@@ -74,13 +74,16 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - craft_item:glass_bottle
 - craft_item:golden_apple
 - craft_item:jungle_planks
+- craft_item:ladder
 - craft_item:mangrove_planks
 - craft_item:netherite_ingot
+- craft_item:note_block
 - craft_item:oak_planks
 - craft_item:shears
 - craft_item:shield
 - craft_item:spruce_planks
 - craft_item:tinted_glass
+- craft_item:tnt
 - craft_item:warped_planks
 - craft_item:white_bed
 - crouch_one_cm
@@ -150,6 +153,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:nether_wart
 - mine_block:netherrack
 - mine_block:oak_log
+- mine_block:obsidian
 - mine_block:potatoes
 - mine_block:pumpkin
 - mine_block:red_mushroom
