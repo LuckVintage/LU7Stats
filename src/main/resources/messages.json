@@ -157,7 +157,13 @@
   "craft_item:glass": "&aThe player who has crafted the most glass is: &c%topPlayer% &awith &c%number% &aglass!",
   "craft_item:tinted_glass": "&aThe player who has crafted the most tinted glass is: &c%topPlayer% &awith &c%number% &atinted glass!",
   "craft_item:glass_bottle": "&aThe player who has crafted the most glass bottles is: &c%topPlayer% &awith &c%number% &aglass bottles!",
-  "craft_item:bone_meal": "&aThe player who has crafted the most bone meal is: &c%topPlayer% &awith &c%number% &abone meal!",
+  "craft_item:bone_meal": "&aThe player who has mined the most obsidian is: &c%topPlayer% &awith &c%number% &aobsidian!",
+
+
+  "craft_item:tnt": "&aThe player who has crafted the most tnt is: &c%topPlayer% &awith &c%number% &atnt!",
+  "craft_item:note_block": "&aThe player who has crafted the most noteblocks is: &c%topPlayer% &awith &c%number% &anoteblocks!",
+  "craft_item:ladder": "&aThe player who has crafted the most ladders is: &c%topPlayer% &awith &c%number% &aladders!",
+  "mine_block:obsidian": "&aThe player who has crafted the most ladders is: &c%topPlayer% &awith &c%number% &aladders!",
 
   "craft_item:netherite_ingot": "&aThe player who has crafted the most netherite ingots is: &c%topPlayer% &awith &c%number% &anetherite ingots!",
   "craft_item:crafting_table" : "&aThe player who has crafted the most crafting tables is: &c%topPlayer% &awith &c%number% &acrafting tables!",
