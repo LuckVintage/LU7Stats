@@ -73,12 +73,14 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - craft_item:glass
 - craft_item:glass_bottle
 - craft_item:golden_apple
+- craft_item:item_frame
 - craft_item:jungle_planks
 - craft_item:ladder
 - craft_item:mangrove_planks
 - craft_item:netherite_ingot
 - craft_item:note_block
 - craft_item:oak_planks
+- craft_item:painting
 - craft_item:shears
 - craft_item:shield
 - craft_item:spruce_planks
