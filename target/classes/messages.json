@@ -173,6 +173,8 @@
   "craft_item:brewing_stand": "&aThe player who has crafted the most brewing stands is: &c%topPlayer% &awith &c%number% &abrewing stands!",
   "craft_item:white_bed": "&aThe player who has crafted the most white beds is: &c%topPlayer% &awith &c%number% &awhite beds!",
   "craft_item:chest": "&aThe player who has crafted the most chests is: &c%topPlayer% &awith &c%number% &achests!",
+  "craft_item:item_frame": "&aThe player who has crafted the most item frames is: &c%topPlayer% &awith &c%number% &aitem frames!",
+  "craft_item:painting": "&aThe player who has crafted the most paintings is: &c%topPlayer% &awith &c%number% &apaintings!",
   "craft_item:golden_apple": "&aThe player who has crafted the most golden apples is: &c%topPlayer% &awith &c%number% &agolden apples!",
   "craft_item:bread": "&aThe player who has crafted the most bread is: &c%topPlayer% &awith &c%number% &abread!",
   "craft_item:shield": "&aThe player who has crafted the most shields is: &c%topPlayer% &awith &c%number% &ashields!",
