@@ -131,6 +131,7 @@
   "mine_block:nether_wart": "&aThe player who has harvested the most nether wart is: &c%topPlayer% &awith &c%number% &anether wart!",
   "mine_block:chorus_plant": "&aThe player who has harvested the most chorus fruit is: &c%topPlayer% &awith &c%number% &achorus fruit!",
   "mine_block:warped_fungus": "&aThe player who has harvested the most warped fungus is: &c%topPlayer% &awith &c%number% &awarped fungus!",
+  "mine_block:soul_sand": "&aThe player who has harvested the most soul sand is: &c%topPlayer% &awith &c%number% &asoul sand!",
 
   "mine_block:oak_log": "&aThe player who has mined the most oak logs is: &c%topPlayer% &awith &c%number% &aoak logs!",
   "mine_block:spruce_log": "&aThe player who has mined the most spruce logs is: &c%topPlayer% &awith &c%number% &aspruce logs!",
