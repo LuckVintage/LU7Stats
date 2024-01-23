@@ -162,6 +162,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:sand
 - mine_block:sea_pickle
 - mine_block:spruce_log
+- mine_block:soul_sand
 - mine_block:stone
 - mine_block:sugar_cane
 - mine_block:sweet_berry_bush
