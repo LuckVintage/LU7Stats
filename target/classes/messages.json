@@ -110,6 +110,7 @@
   "mine_block:deepslate": "&aThe player who has mined the most deepslate is: &c%topPlayer% &awith &c%number% &adeepslate!",
   "mine_block:grass_block": "&aThe player who has broken the most grass blocks is: &c%topPlayer% &awith &c%number% &agrass blocks!",
   "mine_block:sand": "&aThe player who has mined the most sand is: &c%topPlayer% &awith &c%number% &asand!",
+  "mine_block:dirt": "&aThe player who has mined the most dirt is: &c%topPlayer% &awith &c%number% &adirt!",
   "mine_block:netherrack": "&aThe player who has mined the most netherrack is: &c%topPlayer% &awith &c%number% &anetherrack!",
   "mine_block:clay": "&aThe player who has mined the most clay is: &c%topPlayer% &awith &c%number% &aclay!",
 
