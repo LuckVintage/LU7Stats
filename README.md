@@ -147,8 +147,9 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:deepslate_iron_ore
 - mine_block:deepslate_lapis_ore
 - mine_block:deepslate_redstone_ore
-- mine_block:grass_block
 - mine_block:dirt
+- mine_block:grass_block
+- mine_block:iron_block
 - mine_block:jungle_log
 - mine_block:kelp_plant
 - mine_block:mangrove_log
@@ -162,8 +163,8 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:red_mushroom
 - mine_block:sand
 - mine_block:sea_pickle
-- mine_block:spruce_log
 - mine_block:soul_sand
+- mine_block:spruce_log
 - mine_block:stone
 - mine_block:sugar_cane
 - mine_block:sweet_berry_bush
