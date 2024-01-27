@@ -148,6 +148,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - mine_block:deepslate_lapis_ore
 - mine_block:deepslate_redstone_ore
 - mine_block:dirt
+- mine_block:granite
 - mine_block:grass_block
 - mine_block:iron_block
 - mine_block:jungle_log
