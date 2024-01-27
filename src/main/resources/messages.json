@@ -143,6 +143,7 @@
   "mine_block:mangrove_log": "&aThe player who has mined the most mangrove logs is: &c%topPlayer% &awith &c%number% &amangrove logs!",
   "mine_block:warped_log": "&aThe player who has mined the most warped logs is: &c%topPlayer% &awith &c%number% &awarped logs!",
   "mine_block:iron_block": "&aThe player who has mined the most iron blocks is: &c%topPlayer% &awith &c%number% &airon blocks!",
+  "mine_block:granite": "&aThe player who has mined the most granite is: &c%topPlayer% &awith &c%number% &agranite!",
 
   "craft_item:oak_planks": "&aThe player who has crafted the most oak planks is: &c%topPlayer% &awith &c%number% &aoak planks!",
   "craft_item:birch_planks": "&aThe player who has crafted the most birch planks is: &c%topPlayer% &awith &c%number% &abirch planks!",
