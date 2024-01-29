@@ -14,7 +14,7 @@ import org.json.JSONException;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -67,7 +67,7 @@ public class StatAnnouncements extends JavaPlugin {
 			JSONObject messages = new JSONObject(messagesJson);
 
 			// Initialize the statMessages map
-			statMessages = new HashMap<>();
+			statMessages = new ConcurrentHashMap<>();
 
 			// Populate the statMessages map with custom messages
 			for (String stat : statistics) {
