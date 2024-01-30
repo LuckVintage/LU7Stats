@@ -128,6 +128,7 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - leave_game
 - mine_block:acacia_log
 - mine_block:ancient_debris
+- mine_block:andesite
 - mine_block:bamboo
 - mine_block:beetroots
 - mine_block:birch_log
