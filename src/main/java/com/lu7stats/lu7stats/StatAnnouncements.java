@@ -126,7 +126,7 @@ public class StatAnnouncements extends JavaPlugin {
 			"craft_item:shears", "craft_item:beacon", "craft_item:glass", "craft_item:tinted_glass",
 			"craft_item:glass_bottle", "craft_item:bone_meal", "craft_item:note_block", "craft_item:tnt",
 			"craft_item:ladder", "mine_block:obsidian", "craft_item:painting", "craft_item:item_frame",
-			"mine_block:soul_sand", "mine_block:dirt", "mine_block:iron_block", "mine_block:granite" };
+			"mine_block:soul_sand", "mine_block:dirt", "mine_block:iron_block", "mine_block:granite", "mine_block:andesite" };
 
 	@Override
 	public void onEnable() {
