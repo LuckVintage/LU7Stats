@@ -105,6 +105,7 @@
   "mine_block:deepslate_copper_ore": "&aThe player who has mined the most deepslate copper ore is: &c%topPlayer% &awith &c%number% &adeepslate copper ores!",
   "mine_block:deepslate_iron_ore": "&aThe player who has mined the most deepslate iron ore is: &c%topPlayer% &awith &c%number% &adeepslate iron ores!",
   "mine_block:ancient_debris": "&aThe player who has mined the most ancient debris is: &c%topPlayer% &awith &c%number% &aancient debris!",
+  "mine_block:andesite": "&aThe player who has mined the most andesite is: &c%topPlayer% &awith &c%number% &aandesite!",
 
   "mine_block:stone": "&aThe player who has mined the most stone is: &c%topPlayer% &awith &c%number% &astone mined!",
   "mine_block:deepslate": "&aThe player who has mined the most deepslate is: &c%topPlayer% &awith &c%number% &adeepslate!",
