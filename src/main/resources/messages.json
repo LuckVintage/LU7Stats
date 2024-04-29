@@ -35,6 +35,7 @@
   "walk_on_water_one_cm": "&aThe player who has walked on water the most is: &c%topPlayer% &awith &c%number% &ablocks!",
   "walk_one_cm": "&aThe player who has walked the most is: &c%topPlayer% &awith &c%number% &ablocks!",
   "walk_under_water_one_cm": "&aThe player who has walked underwater the most is: &c%topPlayer% &awith &c%number% &ablocks!",
+  "fly_one_cm": "&aThe player who has flown the most is: &c%topPlayer% &awith &c%number% &acms!",
 
   "kill_entity:zombie": "&aThe player who has killed the most zombies is: &c%topPlayer% &awith &c%number% &azombie kills!",
   "kill_entity:spider": "&aThe player who has killed the most spiders is: &c%topPlayer% &awith &c%number% &aspider kills!",
@@ -62,6 +63,8 @@
   "kill_entity:skeleton": "&aThe player who has killed the most skeletons is: &c%topPlayer% &awith &c%number% &askeleton kills!",
   "kill_entity:ghast": "&aThe player who has killed the most ghasts is: &c%topPlayer% &awith &c%number% &aghast kills!",
   "kill_entity:wither_skeleton": "&aThe player who has killed the most wither skeletons is: &c%topPlayer% &awith &c%number% &awither skeleton kills!",
+  "kill_entity:elder_guardian": "&aThe player who has killed the most elder guardians is: &c%topPlayer% &awith &c%number% &aelder guardian kills!",
+  "kill_entity:ender_dragon": "&aThe player who has killed the most ender dragons is: &c%topPlayer% &awith &c%number% &aender dragon kills!",
 
   "break_item:stone_sword": "&aThe player who has broken the most stone swords is: &c%topPlayer% &awith &c%number% &aswords broken!",
   "break_item:stone_axe": "&aThe player who has broken the most stone axes is: &c%topPlayer% &awith &c%number% &aaxes broken!",
@@ -106,6 +109,14 @@
   "mine_block:deepslate_iron_ore": "&aThe player who has mined the most deepslate iron ore is: &c%topPlayer% &awith &c%number% &adeepslate iron ores!",
   "mine_block:ancient_debris": "&aThe player who has mined the most ancient debris is: &c%topPlayer% &awith &c%number% &aancient debris!",
   "mine_block:andesite": "&aThe player who has mined the most andesite is: &c%topPlayer% &awith &c%number% &aandesite!",
+  "mine_block:diamond_ore": "&aThe player who has mined the most diamond ore is: &c%topPlayer% &awith &c%number% &adiamond ores!",
+  "mine_block:emerald_ore": "&aThe player who has mined the most emerald ore is: &c%topPlayer% &awith &c%number% &aemerald ores!",
+  "mine_block:redstone_ore": "&aThe player who has mined the mostredstone ore is: &c%topPlayer% &awith &c%number% &aredstone ores!",
+  "mine_block:lapis_ore": "&aThe player who has mined the most lapis ore is: &c%topPlayer% &awith &c%number% &alapis ores!",
+  "mine_block:coal_ore": "&aThe player who has mined the most coal ore is: &c%topPlayer% &awith &c%number% &acoal ores!",
+  "mine_block:gold_ore": "&aThe player who has mined the most gold ore is: &c%topPlayer% &awith &c%number% &agold ores!",
+  "mine_block:copper_ore": "&aThe player who has mined the most copper ore is: &c%topPlayer% &awith &c%number% &acopper ores!",
+  "mine_block:iron_ore": "&aThe player who has mined the most iron ore is: &c%topPlayer% &awith &c%number% &aron ores!",
 
   "mine_block:stone": "&aThe player who has mined the most stone is: &c%topPlayer% &awith &c%number% &astone mined!",
   "mine_block:deepslate": "&aThe player who has mined the most deepslate is: &c%topPlayer% &awith &c%number% &adeepslate!",
@@ -114,6 +125,8 @@
   "mine_block:dirt": "&aThe player who has mined the most dirt is: &c%topPlayer% &awith &c%number% &adirt!",
   "mine_block:netherrack": "&aThe player who has mined the most netherrack is: &c%topPlayer% &awith &c%number% &anetherrack!",
   "mine_block:clay": "&aThe player who has mined the most clay is: &c%topPlayer% &awith &c%number% &aclay!",
+  "mine_block:cobblestone": "&aThe player who has mined the most cobblestone is: &c%topPlayer% &awith &c%number% &acobblestone!",
+  "mine_block:cobbled_deepslate": "&aThe player who has mined the most cobbled deepslate is: &c%topPlayer% &awith &c%number% &acobbled deepslate!",
 
   "mine_block:wheat": "&aThe player who has harvested the most wheat is: &c%topPlayer% &awith &c%number% &awheat!",
   "mine_block:sugar_cane": "&aThe player who has harvested the most sugar cane is: &c%topPlayer% &awith &c%number% &asugar cane!",
@@ -134,6 +147,7 @@
   "mine_block:chorus_plant": "&aThe player who has harvested the most chorus fruit is: &c%topPlayer% &awith &c%number% &achorus fruit!",
   "mine_block:warped_fungus": "&aThe player who has harvested the most warped fungus is: &c%topPlayer% &awith &c%number% &awarped fungus!",
   "mine_block:soul_sand": "&aThe player who has harvested the most soul sand is: &c%topPlayer% &awith &c%number% &asoul sand!",
+  "mine_block:sponge": "&aThe player who has mined the most sponges is: &c%topPlayer% &awith &c%number% &asponges!",
 
   "mine_block:oak_log": "&aThe player who has mined the most oak logs is: &c%topPlayer% &awith &c%number% &aoak logs!",
   "mine_block:spruce_log": "&aThe player who has mined the most spruce logs is: &c%topPlayer% &awith &c%number% &aspruce logs!",
@@ -142,7 +156,6 @@
   "mine_block:jungle_log": "&aThe player who has mined the most jungle logs is: &c%topPlayer% &awith &c%number% &ajungle logs!",
   "mine_block:dark_oak_log": "&aThe player who has mined the most dark oak logs is: &c%topPlayer% &awith &c%number% &adark oak logs!",
   "mine_block:mangrove_log": "&aThe player who has mined the most mangrove logs is: &c%topPlayer% &awith &c%number% &amangrove logs!",
-  "mine_block:warped_log": "&aThe player who has mined the most warped logs is: &c%topPlayer% &awith &c%number% &awarped logs!",
   "mine_block:iron_block": "&aThe player who has mined the most iron blocks is: &c%topPlayer% &awith &c%number% &airon blocks!",
   "mine_block:granite": "&aThe player who has mined the most granite is: &c%topPlayer% &awith &c%number% &agranite!",
 
@@ -162,13 +175,13 @@
   "craft_item:glass": "&aThe player who has crafted the most glass is: &c%topPlayer% &awith &c%number% &aglass!",
   "craft_item:tinted_glass": "&aThe player who has crafted the most tinted glass is: &c%topPlayer% &awith &c%number% &atinted glass!",
   "craft_item:glass_bottle": "&aThe player who has crafted the most glass bottles is: &c%topPlayer% &awith &c%number% &aglass bottles!",
-  "craft_item:bone_meal": "&aThe player who has mined the most obsidian is: &c%topPlayer% &awith &c%number% &aobsidian!",
+  "craft_item:bone_meal": "&aThe player who has crafted the most bone meal is: &c%topPlayer% &awith &c%number% &abone meal!",
 
 
   "craft_item:tnt": "&aThe player who has crafted the most tnt is: &c%topPlayer% &awith &c%number% &atnt!",
   "craft_item:note_block": "&aThe player who has crafted the most noteblocks is: &c%topPlayer% &awith &c%number% &anoteblocks!",
   "craft_item:ladder": "&aThe player who has crafted the most ladders is: &c%topPlayer% &awith &c%number% &aladders!",
-  "mine_block:obsidian": "&aThe player who has crafted the most ladders is: &c%topPlayer% &awith &c%number% &aladders!",
+  "mine_block:obsidian": "&aThe player who has mined the most obsidian is: &c%topPlayer% &awith &c%number% &aobsidian!",
 
   "craft_item:netherite_ingot": "&aThe player who has crafted the most netherite ingots is: &c%topPlayer% &awith &c%number% &anetherite ingots!",
   "craft_item:crafting_table" : "&aThe player who has crafted the most crafting tables is: &c%topPlayer% &awith &c%number% &acrafting tables!",
@@ -184,5 +197,12 @@
   "craft_item:bread": "&aThe player who has crafted the most bread is: &c%topPlayer% &awith &c%number% &abread!",
   "craft_item:shield": "&aThe player who has crafted the most shields is: &c%topPlayer% &awith &c%number% &ashields!",
   "craft_item:shears": "&aThe player who has crafted the most shears is: &c%topPlayer% &awith &c%number% &ashears!",
-  "craft_item:ender_chest": "&aThe player who has crafted the most ender chests is: &c%topPlayer% &awith &c%number% &aender chests!"
+  "craft_item:ender_chest": "&aThe player who has crafted the most ender chests is: &c%topPlayer% &awith &c%number% &aender chests!",
+  "craft_item:shulker_box": "&aThe player who has crafted the most shulker boxes is: &c%topPlayer% &awith &c%number% &ashulker boxes!",
+  "craft_item:dispenser": "&aThe player who has crafted the dispensers is: &c%topPlayer% &awith &c%number% &adispensers!",
+  "craft_item:comparator": "&aThe player who has crafted the most redstone comparators is: &c%topPlayer% &awith &c%number% &aredstone comparators!",
+  "craft_item:repeater": "&aThe player who has crafted the most redstone repeaters is: &c%topPlayer% &awith &c%number% &aredstone repeaters!",
+
+  "interact_with_smoker": "&aThe player who has opened the most smokers is: &c%topPlayer% &awith &c%number% &atimes!",
+  "interact_with_blast_furnace": "&aThe player who has opened the most blast furnaces is: &c%topPlayer% &awith &c%number% &atimes!"
 }
