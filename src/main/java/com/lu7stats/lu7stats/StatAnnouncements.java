@@ -91,13 +91,13 @@ public class StatAnnouncements extends JavaPlugin {
 			"sleep_in_bed", "sneak_time", "sprint_one_cm", "swim_one_cm", "talked_to_villager", "traded_with_villager",
 			"walk_on_water_one_cm", "walk_one_cm", "walk_under_water_one_cm", "mine_block:oak_log",
 			"mine_block:spruce_log", "mine_block:birch_log", "mine_block:jungle_log", "mine_block:dark_oak_log",
-			"mine_block:mangrove_log", "mine_block:warped_log", "mine_block:deepslate_diamond_ore",
-			"mine_block:deepslate", "mine_block:grass_block", "mine_block:wheat", "mine_block:sugar_cane",
-			"mine_block:potatoes", "mine_block:acacia_log", "mine_block:beetroots", "mine_block:bamboo",
-			"mine_block:carrots", "mine_block:melon", "mine_block:pumpkin", "mine_block:cocoa",
-			"mine_block:sweet_berry_bush", "mine_block:cactus", "mine_block:brown_mushroom", "mine_block:red_mushroom",
-			"mine_block:kelp_plant", "mine_block:sea_pickle", "mine_block:nether_wart", "mine_block:chorus_plant",
-			"mine_block:warped_fungus", "mine_block:sand", "mine_block:netherrack", "mine_block:deepslate_iron_ore",
+			"mine_block:mangrove_log", "mine_block:deepslate_diamond_ore", "mine_block:deepslate",
+			"mine_block:grass_block", "mine_block:wheat", "mine_block:sugar_cane", "mine_block:potatoes",
+			"mine_block:acacia_log", "mine_block:beetroots", "mine_block:bamboo", "mine_block:carrots",
+			"mine_block:melon", "mine_block:pumpkin", "mine_block:cocoa", "mine_block:sweet_berry_bush",
+			"mine_block:cactus", "mine_block:brown_mushroom", "mine_block:red_mushroom", "mine_block:kelp_plant",
+			"mine_block:sea_pickle", "mine_block:nether_wart", "mine_block:chorus_plant", "mine_block:warped_fungus",
+			"mine_block:sand", "mine_block:netherrack", "mine_block:deepslate_iron_ore",
 			"mine_block:deepslate_redstone_ore", "mine_block:deepslate_lapis_ore", "mine_block:deepslate_coal_ore",
 			"mine_block:deepslate_gold_ore", "mine_block:deepslate_copper_ore", "mine_block:deepslate_iron_ore",
 			"kill_entity:zombie", "kill_entity:spider", "kill_entity:cave_spider", "kill_entity:creeper",
@@ -126,7 +126,13 @@ public class StatAnnouncements extends JavaPlugin {
 			"craft_item:shears", "craft_item:beacon", "craft_item:glass", "craft_item:tinted_glass",
 			"craft_item:glass_bottle", "craft_item:bone_meal", "craft_item:note_block", "craft_item:tnt",
 			"craft_item:ladder", "mine_block:obsidian", "craft_item:painting", "craft_item:item_frame",
-			"mine_block:soul_sand", "mine_block:dirt", "mine_block:iron_block", "mine_block:granite", "mine_block:andesite" };
+			"mine_block:soul_sand", "mine_block:dirt", "mine_block:iron_block", "mine_block:granite",
+			"mine_block:andesite", "mine_block:cobblestone", "mine_block:cobbled_deepslate", "mine_block:sponge",
+			"interact_with_smoker", "interact_with_blast_furnace", "craft_item:shulker_box", "craft_item:dispenser",
+			"craft_item:comparator", "craft_item:repeater", "fly_one_cm", "kill_entity:elder_guardian",
+			"kill_entity:ender_dragon", "mine_block:diamond_ore", "mine_block:emerald_ore", "mine_block:redstone_ore",
+			"mine_block:lapis_ore", "mine_block:coal_ore", "mine_block:gold_ore", "mine_block:copper_ore",
+			"mine_block:iron_ore" };
 
 	@Override
 	public void onEnable() {
