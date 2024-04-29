@@ -100,7 +100,10 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - fall_one_cm
 - fish_caught
 - flower_potted
+- fly_one_cm
 - horse_one_cm
+- interact_with_blast_furnace
+- interact_with_smoker
 - item_enchanted
 - jump
 - kill_entity:blaze
