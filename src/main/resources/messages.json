@@ -111,7 +111,7 @@
   "mine_block:andesite": "&aThe player who has mined the most andesite is: &c%topPlayer% &awith &c%number% &aandesite!",
   "mine_block:diamond_ore": "&aThe player who has mined the most diamond ore is: &c%topPlayer% &awith &c%number% &adiamond ores!",
   "mine_block:emerald_ore": "&aThe player who has mined the most emerald ore is: &c%topPlayer% &awith &c%number% &aemerald ores!",
-  "mine_block:redstone_ore": "&aThe player who has mined the mostredstone ore is: &c%topPlayer% &awith &c%number% &aredstone ores!",
+  "mine_block:redstone_ore": "&aThe player who has mined the most redstone ore is: &c%topPlayer% &awith &c%number% &aredstone ores!",
   "mine_block:lapis_ore": "&aThe player who has mined the most lapis ore is: &c%topPlayer% &awith &c%number% &alapis ores!",
   "mine_block:coal_ore": "&aThe player who has mined the most coal ore is: &c%topPlayer% &awith &c%number% &acoal ores!",
   "mine_block:gold_ore": "&aThe player who has mined the most gold ore is: &c%topPlayer% &awith &c%number% &agold ores!",
