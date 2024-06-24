@@ -1,0 +1,8 @@
+# Configuration for LU7 Stats Plugin
+
+messagePrefix: "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]" # Prefix used for stat message broadcasts. Leave blank to use the default.
+randomStatinterval: 15 # Number in minutes. Takes affect after next server restart. Default is 15.
+
+# Other options
+enablebStats: true # This has no impact on server performance, we strongly encourage keeping bStats enabled. Default is true.
+enableDebug: false # Sends extra debug messages to the server console. Default is false.
