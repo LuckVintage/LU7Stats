@@ -498,7 +498,7 @@ public class StatAnnouncements extends JavaPlugin {
 
 					// Process and send the announcement with the obtained values
 					processAnnouncement(specifiedStat, topPlayer2, number2);
-				}, 20L); // 20 ticks delay
+				}, 30L); // 20 ticks delay
 			});
 		} else {
 			// If the specified stat is not found, send an error message
