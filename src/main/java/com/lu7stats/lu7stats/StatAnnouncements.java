@@ -146,7 +146,8 @@ public class StatAnnouncements extends JavaPlugin {
 			"craft_item:waxed_oxidized_copper_stairs", "craft_item:waxed_oxidized_copper_slab",
 			"craft_item:lightning_rod", "fly_one_cm", "kill_entity:elder_guardian", "kill_entity:ender_dragon",
 			"mine_block:diamond_ore", "mine_block:emerald_ore", "mine_block:redstone_ore", "mine_block:lapis_ore",
-			"mine_block:coal_ore", "mine_block:gold_ore", "mine_block:copper_ore", "mine_block:iron_ore" };
+			"mine_block:coal_ore", "mine_block:gold_ore", "mine_block:copper_ore",
+			"mine_block:iron_ore, mine_block:mangrove_leaves" };
 
 	@Override
 	public void onEnable() {

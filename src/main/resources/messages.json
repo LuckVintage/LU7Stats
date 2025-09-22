@@ -146,6 +146,7 @@
   "mine_block:clay": "&aThe player who has mined the most clay is: &c%topPlayer% &awith &c%number% &aclay!",
   "mine_block:cobblestone": "&aThe player who has mined the most cobblestone is: &c%topPlayer% &awith &c%number% &acobblestone!",
   "mine_block:cobbled_deepslate": "&aThe player who has mined the most cobbled deepslate is: &c%topPlayer% &awith &c%number% &acobbled deepslate!",
+  "mine_block:mangrove_leaves": "&aThe player who has mined the most mangrove leaves is: &c%topPlayer% &awith &c%number% &amangrove leaves!",
 
   "mine_block:wheat": "&aThe player who has harvested the most wheat is: &c%topPlayer% &awith &c%number% &awheat!",
   "mine_block:sugar_cane": "&aThe player who has harvested the most sugar cane is: &c%topPlayer% &awith &c%number% &asugar cane!",
