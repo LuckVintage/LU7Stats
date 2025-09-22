@@ -128,11 +128,25 @@ public class StatAnnouncements extends JavaPlugin {
 			"craft_item:ladder", "mine_block:obsidian", "craft_item:painting", "craft_item:item_frame",
 			"mine_block:soul_sand", "mine_block:dirt", "mine_block:iron_block", "mine_block:granite",
 			"mine_block:andesite", "mine_block:cobblestone", "mine_block:cobbled_deepslate", "mine_block:sponge",
-			"interact_with_smoker", "interact_with_blast_furnace", "craft_item:shulker_box", "craft_item:dispenser",
-			"craft_item:comparator", "craft_item:repeater", "fly_one_cm", "kill_entity:elder_guardian",
-			"kill_entity:ender_dragon", "mine_block:diamond_ore", "mine_block:emerald_ore", "mine_block:redstone_ore",
-			"mine_block:lapis_ore", "mine_block:coal_ore", "mine_block:gold_ore", "mine_block:copper_ore",
-			"mine_block:iron_ore" };
+			"mine_block:raw_copper_block", "mine_block:copper_block", "mine_block:cut_copper",
+			"mine_block:exposed_copper", "mine_block:weathered_copper", "mine_block:oxidized_copper",
+			"mine_block:exposed_cut_copper", "mine_block:weathered_cut_copper", "mine_block:oxidized_cut_copper",
+			"mine_block:waxed_copper_block", "mine_block:waxed_cut_copper", "mine_block:waxed_exposed_copper",
+			"mine_block:waxed_weathered_copper", "mine_block:waxed_oxidized_copper",
+			"mine_block:waxed_exposed_cut_copper", "mine_block:waxed_weathered_cut_copper",
+			"mine_block:waxed_oxidized_cut_copper", "interact_with_smoker", "interact_with_blast_furnace",
+			"craft_item:shulker_box", "craft_item:dispenser", "craft_item:comparator", "craft_item:repeater",
+			"craft_item:copper_ingot", "craft_item:cut_copper_stairs", "craft_item:cut_copper_slab",
+			"craft_item:exposed_cut_copper_stairs", "craft_item:exposed_cut_copper_slab",
+			"craft_item:weathered_cut_copper_stairs", "craft_item:weathered_cut_copper_slab",
+			"craft_item:oxidized_cut_copper_stairs", "craft_item:oxidized_cut_copper_slab",
+			"craft_item:waxed_copper_block", "craft_item:waxed_cut_copper_stairs", "craft_item:waxed_cut_copper_slab",
+			"craft_item:waxed_exposed_copper_stairs", "craft_item:waxed_exposed_copper_slab",
+			"craft_item:waxed_weathered_copper_stairs", "craft_item:waxed_weathered_copper_slab",
+			"craft_item:waxed_oxidized_copper_stairs", "craft_item:waxed_oxidized_copper_slab",
+			"craft_item:lightning_rod", "fly_one_cm", "kill_entity:elder_guardian", "kill_entity:ender_dragon",
+			"mine_block:diamond_ore", "mine_block:emerald_ore", "mine_block:redstone_ore", "mine_block:lapis_ore",
+			"mine_block:coal_ore", "mine_block:gold_ore", "mine_block:copper_ore", "mine_block:iron_ore" };
 
 	@Override
 	public void onEnable() {

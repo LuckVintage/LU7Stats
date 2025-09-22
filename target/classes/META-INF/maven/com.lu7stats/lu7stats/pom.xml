@@ -6,7 +6,7 @@
 
 	<groupId>com.lu7stats</groupId>
 	<artifactId>lu7stats</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>lu7stats</name>
 

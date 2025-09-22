@@ -1,5 +1,5 @@
 name: lu7stats
-version: '1.0-SNAPSHOT'
+version: '1.1-SNAPSHOT'
 main: com.lu7stats.lu7stats.StatAnnouncements
 author: 'Andrew Peacock'
 description: Plugin that uses PlaceholderAPI to broadcast top stat messages every 15 minutes with the help of PlayerStats.
