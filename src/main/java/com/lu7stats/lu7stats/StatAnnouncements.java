@@ -142,7 +142,6 @@ public class StatAnnouncements extends JavaPlugin {
 			"craft_item:oxidized_cut_copper_stairs", "craft_item:oxidized_cut_copper_slab",
 			"craft_item:waxed_copper_block", "craft_item:waxed_cut_copper_stairs", "craft_item:waxed_cut_copper_slab",
 			"craft_item:waxed_exposed_copper_stairs", "craft_item:waxed_exposed_copper_slab",
-			"craft_item:waxed_weathered_copper_stairs", "craft_item:waxed_weathered_copper_slab",
 			"craft_item:waxed_oxidized_copper_stairs", "craft_item:waxed_oxidized_copper_slab",
 			"craft_item:lightning_rod", "fly_one_cm", "kill_entity:elder_guardian", "kill_entity:ender_dragon",
 			"mine_block:diamond_ore", "mine_block:emerald_ore", "mine_block:redstone_ore", "mine_block:lapis_ore",
@@ -498,14 +497,14 @@ public class StatAnnouncements extends JavaPlugin {
 			}
 			getServer().getScheduler().runTaskAsynchronously(this, () -> {
 				// Fetch the first set of results
-				String topPlayer1 = getTopPlayer(specifiedStat);
-				String number1 = getNumber(specifiedStat);
+				String topPlayer1 = getTopPlayer1(specifiedStat);
+				String number1 = getNumber1(specifiedStat);
 
 				// Introduce a delay (adjust ticks as needed, 20 ticks = 1 second)
 				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
 					// Fetch the second set of results
-					String topPlayer2 = getTopPlayer(specifiedStat);
-					String number2 = getNumber(specifiedStat);
+					String topPlayer2 = getTopPlayer1(specifiedStat);
+					String number2 = getNumber1(specifiedStat);
 					if (debugModeEnabled) {
 						getLogger().log(Level.INFO, "DEBUG: Retrieved topPlayer successfully: " + topPlayer2);
 						getLogger().log(Level.INFO, "DEBUG: Retrieved number successfully: " + number2);
@@ -562,72 +561,84 @@ public class StatAnnouncements extends JavaPlugin {
 			getLogger().log(Level.INFO, "DEBUG: Selected random statistic: " + randomStat);
 		}
 
-		// Use BukkitScheduler to introduce a delay and run tasks asynchronously
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Attempting to request stat values from PlaceHolderAPI...");
+		if (lastBroadcastedStat != null && lastBroadcastedStat.equals(randomStat)) {
+			if (debugModeEnabled) {
+				getLogger().log(Level.INFO,
+						"DEBUG: Chosen stat is the same as the last broadcasted stat, picking another...");
+			}
+			sendRandomAnnouncement();
+			return;
 		}
+
+		// Use BukkitScheduler to run a task asynchronously
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			// Use CompletableFuture for asynchronous processing
-			CompletableFuture<String> topPlayerFuture1 = CompletableFuture.supplyAsync(() -> getTopPlayer(randomStat));
-			CompletableFuture<String> numberFuture1 = CompletableFuture.supplyAsync(() -> getNumber(randomStat));
+			String topPlayer = getTopPlayer1(randomStat);
+			String number = getNumber1(randomStat);
 
-			CompletableFuture<Void> combinedFuture1 = CompletableFuture.allOf(topPlayerFuture1, numberFuture1);
-
-			// Introduce a small delay (adjust the time as needed)
-			try {
-				TimeUnit.MILLISECONDS.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (topPlayer.contains("Processing") || number.contains("Processing")) {
+				if (debugModeEnabled) {
+					getLogger().log(Level.INFO, "DEBUG: PlaceholderAPI returned 'Processing'. Retrying in 1 second...");
+				}
+				// Re-schedule the entire process to run again in 1 second
+				getServer().getScheduler().runTaskLater(this, () -> sendRandomAnnouncement(), 20L);
+				return;
 			}
 
-			CompletableFuture<String> topPlayerFuture2 = CompletableFuture.supplyAsync(() -> getTopPlayer(randomStat));
-			CompletableFuture<String> numberFuture2 = CompletableFuture.supplyAsync(() -> getNumber(randomStat));
+			if ("0".equals(number)) {
+				if (debugModeEnabled) {
+					getLogger().log(Level.INFO, "DEBUG: Chosen stat has no top player, picking another...");
+				}
+				sendRandomAnnouncement();
+				return;
+			}
 
-			CompletableFuture<Void> combinedFuture2 = CompletableFuture.allOf(topPlayerFuture2, numberFuture2);
-
-			// Wait for both CompletableFuture to complete
-			combinedFuture1.thenAcceptAsync(ignored -> {
-				String topPlayer = topPlayerFuture1.join();
-				String number = numberFuture1.join();
-				// Do not send the message here
-			});
-
-			combinedFuture2.thenAcceptAsync(ignored -> {
-				// Introduce a delay before sending the message
-				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-					String topPlayer = topPlayerFuture2.join();
-					String number = numberFuture2.join();
-					if (debugModeEnabled) {
-						getLogger().log(Level.INFO, "DEBUG: Retrieved topPlayer successfully: " + topPlayer);
-						getLogger().log(Level.INFO, "DEBUG: Retrieved number successfully: " + number);
-					}
-
-					// Check if the number value is '0' and pick another random stat if true
-					if ("0".equals(number)) {
-						if (debugModeEnabled) {
-							getLogger().log(Level.INFO, "DEBUG: Chosen stat has no top player, picking another...");
-						}
-						sendRandomAnnouncement();
-						return;
-					}
-
-					// Check if the last broadcasted stat is the same as the current random stat
-					if (lastBroadcastedStat != null && lastBroadcastedStat.equals(randomStat)) {
-						if (debugModeEnabled) {
-							getLogger().log(Level.INFO,
-									"DEBUG: Chosen stat is the same as the last broadcasted stat, picking another...");
-						}
-						sendRandomAnnouncement();
-						return;
-					}
-
-					// Process and send the announcement with the obtained values
-					processAnnouncement(randomStat, topPlayer, number);
-					// Save the last broadcasted stat
-					lastBroadcastedStat = randomStat;
-				}, 20L); // 20 ticks delay (adjust as needed)
+			// All good, process the announcement on the main thread
+			getServer().getScheduler().runTask(this, () -> {
+				processAnnouncement(randomStat, topPlayer, number);
+				lastBroadcastedStat = randomStat;
 			});
 		});
+	}
+
+	private String getNumber1(String stat) {
+		String result = "Processing";
+		int retries = 0;
+		final int MAX_RETRIES = 5;
+
+		while (result.contains("Processing") && retries < MAX_RETRIES) {
+			result = PlaceholderAPI.setPlaceholders(null, "%playerstats_top:1," + stat + ",only:number%");
+			if (result.contains("Processing")) {
+				retries++;
+				try {
+					Thread.sleep(500); // Wait 0.5 seconds before retrying
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	private String getTopPlayer1(String stat) {
+		String result = "Processing";
+		int retries = 0;
+		final int MAX_RETRIES = 5;
+
+		while (result.contains("Processing") && retries < MAX_RETRIES) {
+			String placeholder = "%playerstats_top:1," + stat + ",only:player_name%";
+			result = PlaceholderAPI.setPlaceholders(null, placeholder);
+			if (result.contains("Processing")) {
+				retries++;
+				try {
+					Thread.sleep(500); // Wait 0.5 seconds before retrying
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	private void processAnnouncement(String randomStat, String topPlayer, String number) {
