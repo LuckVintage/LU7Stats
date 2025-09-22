@@ -4,7 +4,7 @@ LU7Stats is a Minecraft 1.20 Plugin that utilizes PlaceholderAPI to broadcast to
 
 ## Installation:
 
-Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw/main/target/lu7stats-1.0-SNAPSHOT.jar).
+Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw/main/target/lu7stats-1.1-SNAPSHOT.jar).
 
 ### Prerequisites:
 
