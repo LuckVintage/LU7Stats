@@ -8,9 +8,9 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 
 ### Prerequisites:
 
-- [PlaceholderAPI version 2.11.5](https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.5/placeholderapi-2.11.5.jar)
+- [PlaceholderAPI version 2.11.6](https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.6/placeholderapi-2.11.6.jar)
 - [PlayerStatsExpansion for PlaceholderAPI](https://github.com/Artemis-the-gr8/PlayerStatsExpansion)
-- [PlayerStats version 2.1](https://github.com/itHotL/PlayerStats)
+- [PlayerStats version 2.5](https://github.com/itHotL/PlayerStats)
 
 ## Supported Statistics:
 
