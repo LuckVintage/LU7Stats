@@ -1,10 +1,14 @@
 # LU7Stats Minecraft Plugin:
 
-LU7Stats is a Minecraft 1.20 Plugin that utilizes PlaceholderAPI to broadcast top stat messages every 15 minutes with the help of PlayerStats. This plugin was primarily created for use on a private survival server. While I don't plan to actively maintain this plugin, the code is available for anyone to use. Pull requests are welcomed.
+LU7Stats is a Minecraft Plugin that utilizes PlaceholderAPI to broadcast top stat messages every 15 minutes with the help of PlayerStats. This plugin was primarily created for use on a private survival server. Pull requests are welcome.
 
 ## Installation:
 
-Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw/main/target/lu7stats-1.1-SNAPSHOT.jar).
+- Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw/main/target/lu7stats-1.1-SNAPSHOT.jar).
+- Download PlaceholderAPI and PlayerStats. Drop all .jar files into your Minecraft server plugins folder.
+- Start your server.
+- Run this PlaceholderAPI command to download the PlayerStatsExpansion: ```/papi ecloud download PlayerStats```.
+- Reload PlaceholderAPI with the command ```/papi reload``` (or just restart your server).
 
 ### Prerequisites:
 
@@ -12,7 +16,37 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - [PlayerStatsExpansion for PlaceholderAPI](https://github.com/Artemis-the-gr8/PlayerStatsExpansion)
 - [PlayerStats version 2.5](https://github.com/itHotL/PlayerStats)
 
-## Supported Statistics:
+### Version Support:
+
+LU7Stats has been tested and confirmed to work on Minecraft Java versions: 1.20 - 1.21.8.
+
+## Commands and Permissions:
+
+
+| Command | Description | Permission |
+|---|---|---|
+| `/broadcaststat` | Manually triggers the broadcast of a random stat message | `lu7stats.manualbroadcasts` |
+| `/broadcaststat <stat>` | Manually triggers the broadcast of a specific stat message | `lu7stats.manualbroadcasts` |
+| `/lu7statsreload` | Manually reload all plugin config files | `lu7stats.reload` |
+| `/lu7statshealth` | Checks the plugin health | `lu7stats.healthcheck` |
+| N/A | Permission to see stat broadcast messages - default permission | `lu7stats.seebroadcasts` |
+
+## Statistics and Broadcast Customisation:
+
+You can easily customize the broadcast messages for each statistic by modifying the messages.yml file. Inside this file, you have the flexibility to add or remove any statistics that are supported by PlayerStats. You can also format your messages with colour codes.
+
+When creating your messages, use the following placeholders:
+
+- %topPlayer%: This will automatically be replaced with the player's name.
+
+- %number%: This will be replaced with the value of the statistic.
+
+For example, ```"mine_block:carrots": "&aThe player who has harvested the most carrots is: &c%topPlayer% &awith &c%number% &acarrots!"``` will result in the below stat broadcast:
+
+![Screenshot of stat broadcast message](https://cdn.luckvintage.com/lu7stats.png)
+
+<details>
+<summary>Statistics Included By Default:</summary>
 
 ```markdown
 - animals_bred
@@ -107,8 +141,6 @@ Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw
 - craft_item:waxed_exposed_copper_slab
 - craft_item:waxed_weathered_copper_stairs
 - craft_item:waxed_weathered_copper_slab
-- craft_item:waxed_oxidized_copper_stairs
-- craft_item:waxed_oxidized_copper_slab
 - craft_item:lightning_rod
 - crouch_one_cm
 - damage_blocked_by_shield
