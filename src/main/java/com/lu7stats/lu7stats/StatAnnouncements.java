@@ -528,15 +528,6 @@ public class StatAnnouncements extends JavaPlugin {
 		}
 	}
 
-	private String getNumber(String stat) {
-		return PlaceholderAPI.setPlaceholders(null, "%playerstats_top:1," + stat + ",only:number%");
-	}
-
-	private String getTopPlayer(String stat) {
-		String placeholder = "%playerstats_top:1," + stat + ",only:player_name%";
-		return PlaceholderAPI.setPlaceholders(null, placeholder);
-	}
-
 	private String colorize(String message) {
 		return message.replace("&", "\u00A7");
 	}
