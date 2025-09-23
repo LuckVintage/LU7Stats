@@ -4,7 +4,7 @@ LU7Stats is a Minecraft Plugin that utilizes PlaceholderAPI to broadcast top sta
 
 ## Installation:
 
-- Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw/main/target/lu7stats-1.1-SNAPSHOT.jar).
+- Download the latest .jar from [here](https://github.com/LuckVintage/LU7Stats/raw/main/target/lu7stats-1.2-SNAPSHOT.jar).
 - Download PlaceholderAPI and PlayerStats. Drop all .jar files into your Minecraft server plugins folder.
 - Start your server.
 - Run this PlaceholderAPI command to download the PlayerStatsExpansion: ```/papi ecloud download PlayerStats```.
@@ -37,9 +37,11 @@ You can easily customize the broadcast messages for each statistic by modifying 
 
 When creating your messages, use the following placeholders:
 
-- %topPlayer%: This will automatically be replaced with the player's name.
+| Placeholder | Description |
+|---|---|
+| `%topPlayer%` | This will automatically be replaced with the player's name |
+| `%number%` | This will be replaced with the value of the statistic |
 
-- %number%: This will be replaced with the value of the statistic.
 
 For example, ```"mine_block:carrots": "&aThe player who has harvested the most carrots is: &c%topPlayer% &awith &c%number% &acarrots!"``` will result in the below stat broadcast:
 
@@ -276,3 +278,5 @@ For example, ```"mine_block:carrots": "&aThe player who has harvested the most c
 - traded_with_villager
 - walk_one_cm
 - walk_under_water_one_cm
+
+You can customise the prefix and how often statistics are broadcast by modifying the ```config.yml``` file.
