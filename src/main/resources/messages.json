@@ -211,7 +211,6 @@
   "craft_item:waxed_exposed_copper_stairs": "&aThe player who has crafted the most waxed exposed copper stairs is: &c%topPlayer% &awith &c%number% &awaxed exposed copper stairs!",
   "craft_item:waxed_exposed_copper_slab": "&aThe player who has crafted the most waxed exposed copper slabs is: &c%topPlayer% &awith &c%number% &awaxed exposed copper slabs!",
   "craft_item:waxed_weathered_copper_stairs": "&aThe player who has crafted the most waxed weathered copper stairs is: &c%topPlayer% &awith &c%number% &awaxed weathered copper stairs!",
-  "craft_item:waxed_oxidized_copper_slab": "&aThe player who has crafted the most waxed oxidized copper slabs is: &c%topPlayer% &awith &c%number% &awaxed oxidized copper slabs!",
   "craft_item:lightning_rod": "&aThe player who has crafted the most lightning rods is: &c%topPlayer% &awith &c%number% &alightning rods!",
 
 
