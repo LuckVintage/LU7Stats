@@ -1,6 +1,12 @@
-# LU7Stats Minecraft Plugin:
+<div align='center'>
 
-LU7Stats is a Minecraft Plugin that utilizes PlaceholderAPI to broadcast top stat messages every 15 minutes with the help of PlayerStats. This plugin was primarily created for use on a private survival server. Pull requests are welcome.
+<img src=https://cdn.luckvintage.com/LU7Logo.jpg alt="logo" width=200 height=200 />
+
+<h1>LU7Stats Minecraft Plugin</h1>
+<p>LU7Stats is a Minecraft Plugin that utilizes PlaceholderAPI to broadcast top stat messages every 15 minutes with the help of PlayerStats. This plugin was primarily created for use on a private survival server. Pull requests are welcome. </p>
+
+
+</div>
 
 ## Installation:
 
