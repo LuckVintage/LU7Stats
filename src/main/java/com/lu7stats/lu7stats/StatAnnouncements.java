@@ -1,540 +1,749 @@
 package com.lu7stats.lu7stats;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.entity.Player;
-import org.bstats.bukkit.Metrics;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.json.JSONObject;
-import org.json.JSONException;
-
-import me.clip.placeholderapi.PlaceholderAPI;
-
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.ArrayList;
-import java.util.List;
-import java.nio.file.Files;
-import java.io.IOException;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Registry;
+import org.bukkit.Statistic;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class StatAnnouncements extends JavaPlugin {
+public class StatAnnouncements extends JavaPlugin implements TabExecutor {
+    private static final String DEFAULT_MESSAGE = "&aThe player with the highest %stat% is: &c%topPlayer% &awith &c%number%!";
+    private static final String DEFAULT_PREFIX = "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]";
+    private static final String DEFAULT_STAT_PERMISSION = "lu7stats.seebroadcasts";
 
-	private FileConfiguration config;
-	private Map<String, String> statMessages;
-	private String messagePrefix;
-	private String lastBroadcastedStat;
-	private int randomStatInterval;
-	boolean debugModeEnabled;
-	private List<String> statistics;
+    private FileConfiguration config;
+    private final Map<String, String> statMessages = new LinkedHashMap<>();
+    private final List<StatDefinition> statistics = new ArrayList<>();
+    private String defaultMessage = DEFAULT_MESSAGE;
+    private String messagePrefix = DEFAULT_PREFIX;
+    private String lastBroadcastedStat;
+    private int randomStatInterval = 15;
+    private boolean debugModeEnabled;
 
-	private void loadConfig() {
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Attempting to load configuration...");
-		}
-		saveDefaultConfig();
-		config = getConfig();
-		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]");
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Loaded messagePrefix: " + messagePrefix);
-		}
-		randomStatInterval = config.getInt("randomStatInterval", 15);
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Loaded randomStatInterval: " + randomStatInterval);
-		}
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Finished loading configuration");
-		}
-	}
+    @Override
+    public void onEnable() {
+        saveDefaultConfig();
+        config = getConfig();
+        debugModeEnabled = config.getBoolean("enableDebug", false);
+        loadConfigValues();
 
-	private void loadCustomMessages() {
-		try {
-			// Load messages from messages.json
-			byte[] jsonData = Files.readAllBytes(getDataFolder().toPath().resolve("messages.json"));
-			String messagesJson = new String(jsonData, StandardCharsets.UTF_8);
-			JSONObject messages = new JSONObject(messagesJson);
+        if (!getDataFolder().exists() && !getDataFolder().mkdirs()) {
+            getLogger().severe("Could not create plugin data folder!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
-			// Initialise the statMessages map and the statistics list
-			statMessages = new ConcurrentHashMap<>();
-			statistics = new ArrayList<>();
+        if (!loadAndPopulateMessages()) {
+            getLogger().severe("Unable to load messages.json. LU7 Stats will be disabled.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
-			// Populate the statMessages map and the statistics list with custom messages
-			for (String key : messages.keySet()) {
-				statMessages.put(key, messages.getString(key));
-				statistics.add(key);
-			}
+        registerCommands();
 
-			getLogger().log(Level.INFO,
-					"Custom messages loaded successfully! Loaded " + statistics.size() + " statistics.");
-		} catch (IOException e) {
-			getLogger().log(Level.SEVERE, "Error reading messages.json", e);
-		} catch (Exception e) {
-			getLogger().log(Level.SEVERE, "Error processing messages.json", e);
-		}
-	}
+        if (config.getBoolean("enablebStats", true)) {
+            try {
+                int pluginId = 20633;
+                new Metrics(this, pluginId);
+                getLogger().info("bStats metrics has been enabled. To opt-out, set 'enablebStats' to false.");
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING, "Error initializing bStats.", e);
+            }
+        }
 
-	@Override
-	public void onEnable() {
-		loadConfig();
+        getLogger().info("Discovered " + statistics.size() + " usable Minecraft statistics.");
+        getLogger().info("LU7 Stats plugin has been enabled!");
+        getServer().getScheduler().runTaskLater(this, this::scheduleStatBroadcast, 100L);
+    }
 
-		debugModeEnabled = config.getBoolean("enableDebug", false);
+    @Override
+    public void onDisable() {
+        statMessages.clear();
+        statistics.clear();
+        getLogger().info("LU7 Stats plugin has been disabled!");
+    }
 
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO,
-					"DEBUG: Debug mode is enabled, LU7 Stats will log extra messages to the console. This should be disabled when in production.");
-		}
+    private void loadConfigValues() {
+        messagePrefix = config.getString("messagePrefix", DEFAULT_PREFIX);
+        randomStatInterval = config.getInt("randomStatInterval", 15);
 
-		File messagesFile = new File(getDataFolder(), "messages.json");
-		if (!messagesFile.exists()) {
-			getLogger().log(Level.INFO, "Messages.json not found, generating default file...");
-			saveResource("messages.json", false);
-			getLogger().log(Level.INFO, "Default messages.json created successfully!");
-		}
+        if (randomStatInterval <= 0) {
+            getLogger().warning("randomStatInterval must be greater than 0. Automatic broadcasts will be disabled.");
+        }
 
-		loadCustomMessages();
+        if (debugModeEnabled) {
+            getLogger().info("DEBUG: messagePrefix = " + messagePrefix);
+            getLogger().info("DEBUG: randomStatInterval = " + randomStatInterval);
+        }
+    }
 
-		try {
-			getCommand("broadcaststat").setExecutor(this);
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Loaded command 'broadcaststat' successfully!");
-			}
-		} catch (Exception e) {
-			getLogger().log(Level.SEVERE, "Error loading command: broadcaststat", e);
-		}
+    private boolean loadAndPopulateMessages() {
+        File messagesFile = new File(getDataFolder(), "messages.json");
 
-		try {
-			getCommand("lu7statsreload").setExecutor(this);
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Loaded command 'statsreload' successfully!");
-			}
-		} catch (Exception e) {
-			getLogger().log(Level.SEVERE, "Error loading command: statsreload", e);
-		}
+        if (!messagesFile.exists()) {
+            try {
+                JSONObject initial = new JSONObject();
+                initial.put("_default", DEFAULT_MESSAGE);
+                Files.writeString(messagesFile.toPath(), initial.toString(2), StandardCharsets.UTF_8);
+                getLogger().info("Created default messages.json.");
+            } catch (IOException e) {
+                getLogger().log(Level.SEVERE, "Unable to create messages.json.", e);
+                return false;
+            }
+        }
 
-		try {
-			getCommand("lu7statshealth").setExecutor(this);
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Loaded command 'statshealth' successfully!");
-			}
-		} catch (Exception e) {
-			getLogger().log(Level.SEVERE, "Error loading command: statshealth", e);
-		}
+        JSONObject messages;
+        try {
+            String json = Files.readString(messagesFile.toPath(), StandardCharsets.UTF_8);
+            messages = new JSONObject(json);
+        } catch (IOException | JSONException e) {
+            getLogger().log(Level.SEVERE, "Unable to read messages.json.", e);
+            return false;
+        }
 
-		getLogger().log(Level.INFO, "LU7 Stats plugin has been enabled!");
+        defaultMessage = messages.optString("_default", DEFAULT_MESSAGE);
+        if (defaultMessage.isBlank()) {
+            defaultMessage = DEFAULT_MESSAGE;
+        }
 
-		if (config.getBoolean("enablebStats", true)) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Initializing bStats...");
-			}
-			try {
-				int pluginId = 20633;
-				Metrics metrics = new Metrics(this, pluginId);
-				getLogger().log(Level.INFO,
-						"bStats metrics has been enabled. To opt-out, change 'enablebStats' to false in config.yml.");
-			} catch (Exception e) {
-				getLogger().log(Level.SEVERE, "Error initializing bStats", e);
-				if (debugModeEnabled) {
-					getLogger().log(Level.INFO, "DEBUG: Skipping bStats initialization due to an error.");
-				}
-			}
-		} else {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Skipping bStats initialization as per config.");
-			}
-		}
+        List<StatDefinition> discoveredStatistics = discoverStatistics();
+        Map<String, String> existingMessages = new LinkedHashMap<>();
 
-		getServer().getScheduler().runTaskLater(this, () -> {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Running dependency checks...");
-			}
-			checkDependencies();
-		}, 600L);
-	}
+        for (String key : messages.keySet()) {
+            if (key.equals("_default")) {
+                continue;
+            }
+            Object value = messages.opt(key);
+            if (value instanceof String string) {
+                existingMessages.put(key, string);
+            }
+        }
 
-	private void scheduleStatBroadcast() {
-		int intervalMinutes = config.getInt("randomStatInterval", 15);
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				sendRandomAnnouncement();
-			}
-		}.runTaskTimer(this, 0, 20 * 60 * intervalMinutes);
-		getLogger().log(Level.INFO,
-				"Stat broadcast task scheduled with an interval of " + intervalMinutes + " minutes.");
-	}
+        Map<String, String> outputMessages = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        outputMessages.putAll(existingMessages);
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (label.equals("broadcaststat")) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: 'broadcaststat' command triggered by " + sender);
-			}
-			if (args.length == 0) {
-				sendRandomAnnouncement();
-				sender.sendMessage(colorize(
-						"&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aBroadcast triggered manually with a random stat!"));
-			} else if (args.length == 1) {
-				sendManualAnnouncement(args[0], sender);
-			} else {
-				sender.sendMessage(colorize("&cUsage: /broadcaststat [stat]"));
-			}
-			return true;
-		} else if (label.equals("lu7statsreload")) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: 'statsreload' command triggered by " + sender);
-			}
-			if (args.length == 0) {
-				reloadFiles(sender);
-			} else {
-				sender.sendMessage(colorize("&cUsage: /lu7statsreload"));
-			}
-			return true;
-		} else if (label.equals("lu7statshealth")) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: 'statshealth' command triggered by " + sender);
-			}
-			if (args.length == 0) {
-				checkHealth(sender);
-			} else {
-				sender.sendMessage(colorize("&cUsage: /lu7statshealth"));
-			}
-			return true;
-		}
-		return false;
-	}
+        int added = 0;
+        for (StatDefinition stat : discoveredStatistics) {
+            if (!outputMessages.containsKey(stat.key())) {
+                outputMessages.put(stat.key(), defaultMessage);
+                added++;
+            }
+        }
 
-	private void reloadFiles(CommandSender sender) {
-		reloadConfig();
-		debugModeEnabled = config.getBoolean("enableDebug", false);
-		config = getConfig();
-		messagePrefix = config.getString("messagePrefix", "&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l]");
-		randomStatInterval = config.getInt("randomStatInterval", 15);
-		sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aConfig.yml reloaded successfully!"));
-		try {
-			statMessages.clear();
-			loadCustomMessages();
-			sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aMessages.json reloaded successfully!"));
-		} catch (Exception e) {
-			sender.sendMessage(colorize(
-					"&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &cError reloading messages.json. Check console for details."));
-			getLogger().log(Level.SEVERE, "Error reloading messages.json", e);
-		}
-	}
+        JSONObject output = new JSONObject(new LinkedHashMap<>());
+        output.put("_default", defaultMessage);
 
-	private void checkHealth(CommandSender sender) {
-		List<String> errorMessages = new ArrayList<>();
+        for (Map.Entry<String, String> entry : outputMessages.entrySet()) {
+            output.put(entry.getKey(), entry.getValue());
+        }
 
-		if (!isPluginEnabled("PlaceholderAPI")) {
-			errorMessages.add("PlaceholderAPI is not installed or enabled!");
-			getLogger().log(Level.SEVERE,
-					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
-		} else {
-			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
-				errorMessages.add("PlayerStats PlaceholderAPI expansion is not installed or enabled!");
-				getLogger().log(Level.SEVERE,
-						"PlayerStats PlaceholderAPI expansion is not installed or enabled! LU7 Stats will NOT function as expected.");
-			}
-		}
+        try {
+            Files.writeString(messagesFile.toPath(), output.toString(2), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Unable to write populated messages.json.", e);
+            return false;
+        }
 
-		if (!isPluginEnabled("PlayerStats")) {
-			errorMessages.add("PlayerStats is not installed or enabled!");
-			getLogger().log(Level.SEVERE,
-					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
-		}
+        statMessages.clear();
+        for (Map.Entry<String, String> entry : outputMessages.entrySet()) {
+            if (isKnownStatisticKey(entry.getKey())) {
+                statMessages.put(entry.getKey(), entry.getValue());
+            }
+        }
 
-		File configFile = new File(getDataFolder(), "config.yml");
-		if (!configFile.exists()) {
-			errorMessages.add("config.yml not found!");
-			getLogger().log(Level.SEVERE, "config.yml not found! LU7 Stats will NOT function as expected.");
-		}
+        statistics.clear();
+        statistics.addAll(discoveredStatistics);
 
-		File messagesFile = new File(getDataFolder(), "messages.json");
-		if (!messagesFile.exists()) {
-			getLogger().log(Level.WARNING, "messages.json not found!");
-		}
+        if (added > 0) {
+            getLogger().info("Automatically added " + added + " new statistics to messages.json.");
+        }
 
-		if (!isValidConfig()) {
-			errorMessages.add("config.yml is invalid!");
-			getLogger().log(Level.SEVERE, "config.yml is invalid! LU7 Stats will NOT function as expected.");
-		}
+        if (debugModeEnabled) {
+            getLogger().info("DEBUG: Loaded " + statMessages.size() + " statistic message overrides.");
+        }
 
-		if (!isValidMessages()) {
-			errorMessages.add("messages.json is invalid!");
-			getLogger().log(Level.WARNING, "messages.json is invalid!");
-		}
+        return true;
+    }
 
-		for (String errorMessage : errorMessages) {
-			sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aHealth check: &c" + errorMessage));
-		}
+    private List<StatDefinition> discoverStatistics() {
+        List<StatDefinition> discovered = new ArrayList<>();
 
-		if (errorMessages.isEmpty()) {
-			sender.sendMessage(colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aHealth check: Plugin is healthy!"));
-			getLogger().log(Level.INFO, "Healthcheck run successfully: Plugin is healthy!");
-		}
-	}
+        for (Statistic statistic : Registry.STATISTIC) {
+            if (statistic == null) {
+                continue;
+            }
 
-	private boolean isPlaceholderAPIExpansionInstalled(String expansionName) {
-		if (isPluginEnabled("PlaceholderAPI")) {
-			return PlaceholderAPI.isRegistered(expansionName);
-		}
-		return false;
-	}
+            switch (statistic.getType()) {
+                case UNTYPED -> discovered.add(new StatDefinition(statistic, null, null, statistic.getKey().getKey()));
+                case BLOCK -> {
+                    for (Material material : Material.values()) {
+                        if (!material.isBlock()) {
+                            continue;
+                        }
+                        String key = buildKey(statistic, material);
+                        discovered.add(new StatDefinition(statistic, material, null, key));
+                    }
+                }
+                case ITEM -> {
+                    for (Material material : Material.values()) {
+                        if (!material.isItem()) {
+                            continue;
+                        }
+                        String key = buildKey(statistic, material);
+                        discovered.add(new StatDefinition(statistic, material, null, key));
+                    }
+                }
+                case ENTITY -> {
+                    for (EntityType entityType : EntityType.values()) {
+                        if (!isValidEntityStatistic(statistic, entityType)) {
+                            continue;
+                        }
+                        String key = buildKey(statistic, entityType);
+                        discovered.add(new StatDefinition(statistic, null, entityType, key));
+                    }
+                }
+            }
+        }
 
-	private boolean isPluginEnabled(String pluginName) {
-		return Bukkit.getPluginManager().getPlugin(pluginName) != null
-				&& Bukkit.getPluginManager().isPluginEnabled(pluginName);
-	}
+        Map<String, StatDefinition> unique = new LinkedHashMap<>();
+        for (StatDefinition definition : discovered) {
+            unique.putIfAbsent(definition.key(), definition);
+        }
 
-	private void checkDependencies() {
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Checking dependencies...");
-		}
-		boolean placeholderAPIEnabled = isPluginEnabled("PlaceholderAPI");
-		if (config.getBoolean("enableDebug", false)) {
-			getLogger().log(Level.INFO, "DEBUG: PlaceholderAPI Enabled: " + placeholderAPIEnabled);
-		}
-		boolean playerStatsEnabled = isPlaceholderAPIExpansionInstalled("PlayerStats");
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: PlayerStats Expansion Enabled: " + playerStatsEnabled);
-		}
-		if (!placeholderAPIEnabled) {
-			getLogger().log(Level.SEVERE,
-					"PlaceholderAPI is not installed or enabled! LU7 Stats will NOT function as expected.");
-			return;
-		} else {
-			if (!isPlaceholderAPIExpansionInstalled("PlayerStats")) {
-				getLogger().log(Level.SEVERE,
-						"PlayerStats PlaceholderAPI expansion is not installed or enabled! LU7 Stats will NOT function as expected.");
-			}
-		}
+        List<StatDefinition> result = new ArrayList<>(unique.values());
+        result.sort(Comparator.comparing(StatDefinition::key, String.CASE_INSENSITIVE_ORDER));
+        return result;
+    }
 
-		boolean playerStatsPluginEnabled = isPluginEnabled("PlayerStats");
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: PlayerStats Plugin Enabled: " + playerStatsPluginEnabled);
-		}
-		if (!isPluginEnabled("PlayerStats")) {
-			getLogger().log(Level.SEVERE,
-					"PlayerStats is not installed or enabled! LU7 Stats will NOT function as expected.");
-		}
+    private boolean isValidEntityStatistic(Statistic statistic, EntityType entityType) {
+        try {
+            org.bukkit.scoreboard.Criteria.statistic(statistic, entityType);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
 
-		if (placeholderAPIEnabled && playerStatsEnabled) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Dependencies are satisfied. Scheduling stat broadcasts...");
-			}
-			scheduleStatBroadcast();
-		} else {
-			getLogger().log(Level.SEVERE, "Due to missing dependencies, automatic stat broadcasts have been disabled.");
-		}
-	}
+    private String buildKey(Statistic statistic, Material material) {
+        return statistic.getKey().getKey() + ":" + material.getKey().getKey();
+    }
 
-	private boolean isValidConfig() {
-		try {
-			getConfig().load(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "config.yml")),
-					StandardCharsets.UTF_8));
-			return true;
-		} catch (IOException | InvalidConfigurationException e) {
-			getLogger().log(Level.SEVERE, "Error loading config.yml", e);
-			return false;
-		}
-	}
+    private String buildKey(Statistic statistic, EntityType entityType) {
+        return statistic.getKey().getKey() + ":" + entityType.getKey().getKey();
+    }
 
-	private boolean isValidMessages() {
-		try {
-			JSONObject messages = new JSONObject(new String(
-					Files.readAllBytes(new File(getDataFolder(), "messages.json").toPath()), StandardCharsets.UTF_8));
-			return true;
-		} catch (IOException | JSONException e) {
-			getLogger().log(Level.SEVERE, "Error loading messages.json", e);
-			return false;
-		}
-	}
+    private boolean isKnownStatisticKey(String key) {
+        for (StatDefinition statistic : statistics) {
+            if (statistic.key().equalsIgnoreCase(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private void sendManualAnnouncement(String specifiedStat, CommandSender sender) {
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Attempting to process manual stat broadcast");
-		}
-		boolean validStat = statistics.contains(specifiedStat);
+    private void registerCommands() {
+        registerCommand("broadcaststat");
+        registerCommand("lu7statsreload");
+        registerCommand("lu7statshealth");
+    }
 
-		if (validStat) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Selected statistic: " + specifiedStat);
-			}
-			sender.sendMessage(colorize(
-					"&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &aBroadcast triggered manually for stat: &e" + specifiedStat));
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: Attempting to request stat values from PlaceHolderAPI...");
-			}
-			getServer().getScheduler().runTaskAsynchronously(this, () -> {
-				String topPlayer1 = getTopPlayer1(specifiedStat);
-				String number1 = getNumber1(specifiedStat);
-				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-					String topPlayer2 = getTopPlayer1(specifiedStat);
-					String number2 = getNumber1(specifiedStat);
-					if (debugModeEnabled) {
-						getLogger().log(Level.INFO, "DEBUG: Retrieved topPlayer successfully: " + topPlayer2);
-						getLogger().log(Level.INFO, "DEBUG: Retrieved number successfully: " + number2);
-					}
-					processAnnouncement(specifiedStat, topPlayer2, number2);
-				}, 30L);
-			});
-		} else {
-			sender.sendMessage(
-					colorize("&9&l[&6&lL&a&lU&e&l7&c&l Stats&9&l] &cInvalid stat specified: " + specifiedStat));
-		}
-	}
+    private void registerCommand(String commandName) {
+        if (getCommand(commandName) == null) {
+            getLogger().warning("Command '" + commandName + "' is missing from plugin.yml.");
+            return;
+        }
+        getCommand(commandName).setExecutor(this);
+        getCommand(commandName).setTabCompleter(this);
+    }
 
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> completions = new ArrayList<>();
-		if (args.length == 1) {
-			for (String stat : statistics) {
-				if (stat.toLowerCase().startsWith(args[0].toLowerCase())) {
-					completions.add(stat);
-				}
-			}
-		}
-		return completions;
-	}
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        String commandName = command.getName().toLowerCase();
 
-	private void sendRandomAnnouncement() {
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Attempting to process random stat broadcast");
-		}
-		if (Bukkit.getOnlinePlayers().isEmpty()) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: There are no players online, skipping stat broadcast.");
-			}
-			return;
-		}
+        switch (commandName) {
+            case "broadcaststat" -> {
+                if (args.length == 0) {
+                    sendRandomAnnouncement();
+                    sender.sendMessage(colorize(messagePrefix + " " + "&aBroadcast triggered manually with a random stat!"));
+                    return true;
+                }
+                if (args.length == 1) {
+                    sendManualAnnouncement(args[0], sender);
+                    return true;
+                }
+                sender.sendMessage(colorize("&cUsage: /broadcaststat [stat]"));
+                return true;
+            }
+            case "lu7statsreload" -> {
+                if (args.length != 0) {
+                    sender.sendMessage(colorize("&cUsage: /lu7statsreload"));
+                    return true;
+                }
+                reloadFiles(sender);
+                return true;
+            }
+            case "lu7statshealth" -> {
+                if (args.length != 0) {
+                    sender.sendMessage(colorize("&cUsage: /lu7statshealth"));
+                    return true;
+                }
+                checkHealth(sender);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
 
-		if (statistics.isEmpty()) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO, "DEBUG: No statistics found in messages.json, skipping broadcast.");
-			}
-			return;
-		}
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
 
-		if (debugModeEnabled) {
-			getLogger().log(Level.INFO, "DEBUG: Selecting random statistic from list...");
-		}
-		Random random = new Random();
-		String randomStat = statistics.get(random.nextInt(statistics.size()));
+        if (!command.getName().equalsIgnoreCase("broadcaststat")) {
+            return completions;
+        }
 
-		if (lastBroadcastedStat != null && lastBroadcastedStat.equals(randomStat)) {
-			if (debugModeEnabled) {
-				getLogger().log(Level.INFO,
-						"DEBUG: Chosen stat is the same as the last broadcasted stat, picking another...");
-			}
-			sendRandomAnnouncement();
-			return;
-		}
-		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			String topPlayer = getTopPlayer1(randomStat);
-			String number = getNumber1(randomStat);
+        if (args.length != 1) {
+            return completions;
+        }
 
-			if (topPlayer.contains("Processing") || number.contains("Processing")) {
-				if (debugModeEnabled) {
-					getLogger().log(Level.INFO, "DEBUG: PlaceholderAPI returned 'Processing'. Retrying in 1 second...");
-				}
-				getServer().getScheduler().runTaskLater(this, () -> sendRandomAnnouncement(), 20L);
-				return;
-			}
+        String partial = args[0].toLowerCase();
 
-			if ("0".equals(number)) {
-				if (debugModeEnabled) {
-					getLogger().log(Level.INFO, "DEBUG: Chosen stat has no top player, picking another...");
-				}
-				sendRandomAnnouncement();
-				return;
-			}
-			getServer().getScheduler().runTask(this, () -> {
-				processAnnouncement(randomStat, topPlayer, number);
-				lastBroadcastedStat = randomStat;
-			});
-		});
-	}
+        for (StatDefinition statistic : statistics) {
+            if (statistic.key().toLowerCase().startsWith(partial)) {
+                completions.add(statistic.key());
+            }
+        }
 
-	private String getNumber1(String stat) {
-		String result = "Processing";
-		int retries = 0;
-		final int MAX_RETRIES = 5;
-		while (result.contains("Processing") && retries < MAX_RETRIES) {
-			result = PlaceholderAPI.setPlaceholders(null, "%playerstats_top:1," + stat + ",only:number%");
-			if (result.contains("Processing")) {
-				retries++;
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-			}
-		}
-		return result;
-	}
+        return completions;
+    }
 
-	private String getTopPlayer1(String stat) {
-		String result = "Processing";
-		int retries = 0;
-		final int MAX_RETRIES = 5;
-		while (result.contains("Processing") && retries < MAX_RETRIES) {
-			String placeholder = "%playerstats_top:1," + stat + ",only:player_name%";
-			result = PlaceholderAPI.setPlaceholders(null, placeholder);
-			if (result.contains("Processing")) {
-				retries++;
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-			}
-		}
-		return result;
-	}
+    private void reloadFiles(CommandSender sender) {
+        reloadConfig();
+        config = getConfig();
+        debugModeEnabled = config.getBoolean("enableDebug", false);
+        loadConfigValues();
 
-	private void processAnnouncement(String randomStat, String topPlayer, String number) {
-		String customMessage = statMessages.getOrDefault(randomStat,
-				"&aThe top player for %stat% is: &c%topPlayer% with %number%");
-		String prefixedMessage = messagePrefix + " " + customMessage.replace("%stat%", randomStat.replace(":", " "))
-				.replace("%topPlayer%", topPlayer).replace("%number%", number);
-		boolean messageSent = false;
-		try {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (player.hasPermission("lu7stats.seebroadcasts")) {
-					player.sendMessage(colorize(prefixedMessage));
-					if (!messageSent && player.isOnline()) {
-						messageSent = true;
-						if (debugModeEnabled) {
-							getLogger().log(Level.INFO,
-									"DEBUG: Stat broadcast sent successfully: Message: " + prefixedMessage);
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			messageSent = false;
-			getLogger().log(Level.SEVERE,
-					"Something went wrong while attempting to send the stat broadcast: " + e.getMessage());
-		}
-	}
+        sender.sendMessage(colorize(messagePrefix + " " + "&aConfig.yml reloaded successfully!"));
 
-	private String colorize(String message) {
-		return message.replace("&", "\u00A7");
-	}
+        boolean success = loadAndPopulateMessages();
 
-	@Override
-	public void onDisable() {
-		statMessages.clear();
-		getLogger().log(Level.INFO, "LU7 Stats plugin has been disabled!");
-	}
+        if (success) {
+            sender.sendMessage(colorize(messagePrefix + " " + "&aMessages.json reloaded and synchronised with Paper's statistic registry!"));
+        } else {
+            sender.sendMessage(colorize(messagePrefix + " " + "&cError reloading messages.json. Check console."));
+        }
+    }
+
+    private void scheduleStatBroadcast() {
+        if (randomStatInterval <= 0) {
+            return;
+        }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                sendRandomAnnouncement();
+            }
+        }.runTaskTimer(this, 0L, 20L * 60L * randomStatInterval);
+
+        getLogger().info("Stat broadcast task scheduled with an interval of " + randomStatInterval + " minutes.");
+    }
+
+    private void sendRandomAnnouncement() {
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            if (debugModeEnabled) {
+                getLogger().info("DEBUG: No players online; skipping stat broadcast.");
+            }
+            return;
+        }
+
+        if (statistics.isEmpty()) {
+            getLogger().warning("No statistics are available.");
+            return;
+        }
+
+        StatDefinition selected = chooseRandomStatistic();
+
+        if (selected == null) {
+            return;
+        }
+
+        if (debugModeEnabled) {
+            getLogger().info("DEBUG: Selected random statistic: " + selected.key());
+        }
+
+        getServer().getScheduler().runTaskAsynchronously(this, () -> {
+            LeaderboardEntry result = findTopPlayer(selected);
+
+            if (result == null || result.value() <= 0) {
+                if (debugModeEnabled) {
+                    getLogger().info("DEBUG: " + selected.key() + " has no non-zero leaderboard value.");
+                }
+                getServer().getScheduler().runTask(this, this::sendRandomAnnouncement);
+                return;
+            }
+
+            getServer().getScheduler().runTask(this, () -> {
+                processAnnouncement(selected, result);
+                lastBroadcastedStat = selected.key();
+            });
+        });
+    }
+
+    private StatDefinition chooseRandomStatistic() {
+        if (statistics.isEmpty()) {
+            return null;
+        }
+
+        Random random = new Random();
+
+        if (statistics.size() == 1) {
+            return statistics.get(0);
+        }
+
+        for (int attempt = 0; attempt < 20; attempt++) {
+            StatDefinition candidate = statistics.get(random.nextInt(statistics.size()));
+            if (!candidate.key().equalsIgnoreCase(lastBroadcastedStat)) {
+                return candidate;
+            }
+        }
+
+        for (StatDefinition candidate : statistics) {
+            if (!candidate.key().equalsIgnoreCase(lastBroadcastedStat)) {
+                return candidate;
+            }
+        }
+
+        return statistics.get(0);
+    }
+
+    private void sendManualAnnouncement(String specifiedStat, CommandSender sender) {
+        StatDefinition definition = findStatistic(specifiedStat);
+
+        if (definition == null) {
+            sender.sendMessage(colorize(messagePrefix + " " + "&cInvalid statistic: " + specifiedStat));
+            return;
+        }
+
+        sender.sendMessage(colorize(messagePrefix + " " + "&aBroadcast triggered manually for stat: &e" + definition.key()));
+
+        getServer().getScheduler().runTaskAsynchronously(this, () -> {
+            LeaderboardEntry result = findTopPlayer(definition);
+
+            if (result == null || result.value() <= 0) {
+                getServer().getScheduler().runTask(this, () -> sender.sendMessage(colorize(messagePrefix + " " + "&cNo player has a non-zero value for this statistic.")));
+                return;
+            }
+
+            getServer().getScheduler().runTask(this, () -> {
+                processAnnouncement(definition, result);
+                lastBroadcastedStat = definition.key();
+            });
+        });
+    }
+
+    private LeaderboardEntry findTopPlayer(StatDefinition definition) {
+        OfflinePlayer topPlayer = null;
+        int highestValue = 0;
+        OfflinePlayer[] players = Bukkit.getOfflinePlayers();
+
+        for (OfflinePlayer player : players) {
+            int value;
+            try {
+                value = readStatistic(player, definition);
+            } catch (Exception e) {
+                if (debugModeEnabled) {
+                    getLogger().log(Level.WARNING, "DEBUG: Could not read statistic " + definition.key() + " for player " + player.getUniqueId(), e);
+                }
+                continue;
+            }
+
+            if (value > highestValue) {
+                highestValue = value;
+                topPlayer = player;
+            }
+        }
+
+        if (topPlayer == null || highestValue <= 0) {
+            return null;
+        }
+
+        String playerName = topPlayer.getName();
+
+        if (playerName == null || playerName.isBlank()) {
+            playerName = topPlayer.getUniqueId().toString();
+        }
+
+        return new LeaderboardEntry(playerName, highestValue);
+    }
+
+    private int readStatistic(OfflinePlayer player, StatDefinition definition) {
+        Statistic statistic = definition.statistic();
+
+        return switch (statistic.getType()) {
+            case UNTYPED -> player.getStatistic(statistic);
+            case BLOCK, ITEM -> {
+                Material material = definition.material();
+                if (material == null) {
+                    yield 0;
+                }
+                yield player.getStatistic(statistic, material);
+            }
+            case ENTITY -> {
+                EntityType entityType = definition.entityType();
+                if (entityType == null) {
+                    yield 0;
+                }
+                yield player.getStatistic(statistic, entityType);
+            }
+        };
+    }
+
+    private StatDefinition findStatistic(String key) {
+        if (key == null) {
+            return null;
+        }
+
+        for (StatDefinition statistic : statistics) {
+            if (statistic.key().equalsIgnoreCase(key)) {
+                return statistic;
+            }
+        }
+
+        return null;
+    }
+
+    private void processAnnouncement(StatDefinition definition, LeaderboardEntry result) {
+        String customMessage = statMessages.get(definition.key());
+
+        if (customMessage == null || customMessage.isBlank()) {
+            customMessage = defaultMessage;
+        }
+
+        String displayStat = getDisplayName(definition);
+        String finalMessage = messagePrefix + " " + customMessage.replace("%stat%", displayStat)
+                .replace("%topPlayer%", result.playerName())
+                .replace("%number%", formatStatisticValue(definition, result.value()));
+
+        sendToPermittedPlayers(finalMessage);
+    }
+
+    private String getDisplayName(StatDefinition definition) {
+        String base = humanize(definition.statistic().getKey().getKey());
+
+        if (definition.material() != null) {
+            return base + ": " + humanize(definition.material().getKey().getKey());
+        }
+
+        if (definition.entityType() != null) {
+            return base + ": " + humanize(definition.entityType().getKey().getKey());
+        }
+
+        return base;
+    }
+
+    private String formatStatisticValue(StatDefinition definition, int value) {
+        String stat = definition.statistic().getKey().getKey();
+
+        return switch (stat) {
+            // Stored as ticks (20 ticks = 1 second)
+            case "play_one_minute", "time_since_death", "time_since_rest" -> formatTicks(value);
+
+            // Stored as centimetres
+            case "walk_one_cm", "crouch_one_cm", "sprint_one_cm", "swim_one_cm", "fall_one_cm", "climb_one_cm", "fly_one_cm" -> formatDistance(value);
+
+            default -> String.format("%,d", value);
+        };
+    }
+
+    private String formatTicks(int ticks) {
+        long seconds = ticks / 20L;
+        long days = seconds / 86400;
+        seconds %= 86400;
+        long hours = seconds / 3600;
+        seconds %= 3600;
+        long minutes = seconds / 60;
+        seconds %= 60;
+
+        List<String> parts = new ArrayList<>();
+
+        if (days > 0) {
+            parts.add(days + " day" + (days == 1 ? "" : "s"));
+        }
+        if (hours > 0) {
+            parts.add(hours + " hour" + (hours == 1 ? "" : "s"));
+        }
+        if (minutes > 0) {
+            parts.add(minutes + " minute" + (minutes == 1 ? "" : "s"));
+        }
+        if (seconds > 0 && parts.size() < 2) {
+            parts.add(seconds + " second" + (seconds == 1 ? "" : "s"));
+        }
+        if (parts.isEmpty()) {
+            return "0 seconds";
+        }
+
+        return String.join(", ", parts);
+    }
+
+    private String formatDistance(int centimetres) {
+        double metres = centimetres / 100.0;
+
+        if (metres >= 1000) {
+            return String.format("%.2f km", metres / 1000);
+        }
+
+        return String.format("%.0f metres", metres);
+    }
+
+    private String humanize(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        String[] words = value.replace('-', '_').split("_");
+        StringBuilder result = new StringBuilder();
+
+        for (String word : words) {
+            if (word.isBlank()) {
+                continue;
+            }
+            if (!result.isEmpty()) {
+                result.append(' ');
+            }
+            result.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) {
+                result.append(word.substring(1).toLowerCase());
+            }
+        }
+
+        return result.toString();
+    }
+
+    private void sendToPermittedPlayers(String message) {
+        boolean messageSent = false;
+
+        try {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (!player.hasPermission(DEFAULT_STAT_PERMISSION)) {
+                    continue;
+                }
+                player.sendMessage(colorize(message));
+                messageSent = true;
+            }
+
+            if (debugModeEnabled) {
+                getLogger().info("DEBUG: Stat broadcast sent: " + message);
+            }
+
+            if (!messageSent && debugModeEnabled) {
+                getLogger().info("DEBUG: No online players have " + DEFAULT_STAT_PERMISSION);
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "Something went wrong while sending the stat broadcast.", e);
+        }
+    }
+
+    private void checkHealth(CommandSender sender) {
+        List<String> errors = new ArrayList<>();
+        File configFile = new File(getDataFolder(), "config.yml");
+
+        if (!configFile.exists()) {
+            errors.add("config.yml not found!");
+        }
+
+        File messagesFile = new File(getDataFolder(), "messages.json");
+
+        if (!messagesFile.exists()) {
+            errors.add("messages.json not found!");
+        }
+
+        if (!isValidConfig()) {
+            errors.add("config.yml is invalid!");
+        }
+
+        if (!isValidMessages()) {
+            errors.add("messages.json is invalid!");
+        }
+
+        if (statistics.isEmpty()) {
+            errors.add("No Paper statistics were discovered!");
+        }
+
+        if (errors.isEmpty()) {
+            sender.sendMessage(colorize(messagePrefix + " " + "&aHealth check: Plugin is healthy!"));
+            getLogger().info("Healthcheck run successfully: Plugin is healthy!");
+            return;
+        }
+
+        for (String error : errors) {
+            sender.sendMessage(colorize(messagePrefix + " " + "&cHealth check: " + error));
+            getLogger().warning("Health check: " + error);
+        }
+    }
+
+    private boolean isValidConfig() {
+        try {
+            getConfig().load(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "config.yml")), StandardCharsets.UTF_8));
+            return true;
+        } catch (IOException | InvalidConfigurationException e) {
+            getLogger().log(Level.SEVERE, "Error loading config.yml.", e);
+            return false;
+        }
+    }
+
+    private boolean isValidMessages() {
+        File file = new File(getDataFolder(), "messages.json");
+
+        if (!file.exists()) {
+            return false;
+        }
+
+        try {
+            new JSONObject(Files.readString(file.toPath(), StandardCharsets.UTF_8));
+            return true;
+        } catch (IOException | JSONException e) {
+            getLogger().log(Level.SEVERE, "Error loading messages.json.", e);
+            return false;
+        }
+    }
+
+    private String colorize(String message) {
+        if (message == null) {
+            return "";
+        }
+        return message.replace("&", "\u00A7");
+    }
+
+    private record StatDefinition(Statistic statistic, Material material, EntityType entityType, String key) {}
+
+    private record LeaderboardEntry(String playerName, int value) {}
 }

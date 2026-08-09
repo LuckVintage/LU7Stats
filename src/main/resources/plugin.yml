@@ -2,7 +2,7 @@ name: lu7stats
 version: '${project.version}'
 main: com.lu7stats.lu7stats.StatAnnouncements
 author: '${author}'
-description: Plugin that uses PlaceholderAPI to broadcast top stat messages every 15 minutes with the help of PlayerStats.
+description: Plugin that broadcasts top stat messages in chat every 15 minutes.
 api-version: '1.20'
 
 permissions:

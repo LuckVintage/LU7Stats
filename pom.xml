@@ -1,103 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<groupId>com.lu7stats</groupId>
-	<artifactId>lu7stats</artifactId>
-	<version>1.2-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	<name>lu7stats</name>
+    <modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<java.version>1.8</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<author>Andrew Peacock</author>
-	</properties>
+    <groupId>com.lu7stats</groupId>
+    <artifactId>lu7stats</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.4</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<createDependencyReducedPom>false</createDependencyReducedPom>
-							<relocations>
-								<relocation>
-									<pattern>org.bstats</pattern>
-									<shadedPattern>com.lu7stats</shadedPattern>
-								</relocation>
-							</relocations>
-							<!-- Exclude META-INF/MANIFEST.MF from org.json -->
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/MANIFEST.MF</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+    <name>LU7 Stats</name>
+    <description>Dependency-free statistics announcements for Paper</description>
 
-		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-	</build>
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 
-	<repositories>
-		<repository>
-			<id>placeholderapi</id>
-			<url>
-				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-		</repository>
-	</repositories>
+    <repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.20.1-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>me.clip</groupId>
-			<artifactId>placeholderapi</artifactId>
-			<version>2.11.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.bstats</groupId>
-			<artifactId>bstats-bukkit</artifactId>
-			<version>3.0.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20231013</version>
-		</dependency>
-	</dependencies>
+        <!-- PaperMC repository -->
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
 
-	<developers>
-		<developer>
-			<name>Andrew Peacock</name>
-			<url>https://andrewpeacock.net</url>
-		</developer>
-	</developers>
+    </repositories>
+
+
+    <dependencies>
+
+        <!-- Paper API -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!-- bStats -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <!-- JSON -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+
+        <plugins>
+
+            <!-- Compile using Java 21 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+
+
+            <!-- Create final plugin jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.3</version>
+
+                <executions>
+
+                    <execution>
+                        <phase>package</phase>
+
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+
+                        <configuration>
+
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                            <relocations>
+
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>com.lu7stats.libs.bstats</shadedPattern>
+                                </relocation>
+
+                                <relocation>
+                                    <pattern>org.json</pattern>
+                                    <shadedPattern>com.lu7stats.libs.json</shadedPattern>
+                                </relocation>
+
+                            </relocations>
+
+
+                            <filters>
+
+                                <filter>
+                                    <artifact>*:*</artifact>
+
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+
+                                </filter>
+
+                            </filters>
+
+                        </configuration>
+
+                    </execution>
+
+                </executions>
+
+            </plugin>
+
+
+        </plugins>
+
+    </build>
+
+
+    <developers>
+
+        <developer>
+            <name>Andrew Peacock</name>
+            <url>https://andrewpeacock.net</url>
+        </developer>
+
+    </developers>
+
 </project>
